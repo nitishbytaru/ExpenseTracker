@@ -1,10 +1,18 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState, useContext } from "react";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { updateProfileData } from "../../api/authApi";
+import {
+  deleteAccountReq,
+  getProfile,
+  logout,
+  updateProfileData,
+} from "../../api/authApi";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
+import LoginContext from "../../context/LoginContext";
 
 function EditProfile() {
+  const { setProfile, setIsLoggedIn } = useContext(LoginContext);
+
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState({
@@ -16,8 +24,8 @@ function EditProfile() {
   useEffect(() => {
     async function fetchUserData() {
       try {
-        const response = await axios.get("/home/profile");
-        setUserData(response.data);
+        const { data } = await getProfile();
+        setUserData(data);
       } catch (error) {
         console.log(error);
       }
@@ -53,10 +61,26 @@ function EditProfile() {
     }
   }
 
+  function deleteAccount() {
+    toast.warning("Confirm to delete account", {
+      action: {
+        label: "Confirm",
+        onClick: () => {
+          deleteAccountReq();
+          logout();
+          setProfile(null);
+          setIsLoggedIn(false);
+          navigate("../ ");
+          showSuccessToast("Account deleted successfully");
+        },
+      },
+    });
+  }
+
   return (
     <div className="min-h-full flex items-center justify-center bg-gray-900 text-white">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6">Create an Account</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">Edit Profile</h1>
         <form className="space-y-6" onSubmit={submitForm}>
           <div>
             <label htmlFor="username" className="block text-sm font-medium">
@@ -66,8 +90,8 @@ function EditProfile() {
               type="text"
               name="username"
               id="username"
-              className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
-              placeholder="username24"
+              className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 mt-1"
+              placeholder="Enter your username"
               required
               onChange={handleChange}
               value={userData.username}
@@ -75,21 +99,21 @@ function EditProfile() {
           </div>
           <div>
             <label htmlFor="email" className="block text-sm font-medium">
-              Your email
+              Email
             </label>
             <input
               type="email"
               name="email"
               id="email"
-              className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
-              placeholder="name@company.com"
+              className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 mt-1"
+              placeholder="Enter your email"
               required
               onChange={handleChange}
               value={userData.email}
             />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+          <div className="grid grid-flow-col items-end">
+            <div className="mr-2">
               <label htmlFor="password" className="block text-sm font-medium">
                 Password
               </label>
@@ -97,12 +121,21 @@ function EditProfile() {
                 type="text"
                 name="password"
                 id="password"
-                className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
-                placeholder="••••••••"
+                className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 mt-1"
+                placeholder="Enter your password"
                 required
                 onChange={handleChange}
                 value={userData.password}
               />
+            </div>
+            <div className="flex justify-between items-center">
+              <button
+                type="button"
+                onClick={deleteAccount}
+                className="block w-full text-center font-semibold rounded-lg bg-red-600 hover:bg-red-700 text-white p-2.5"
+              >
+                DELETE ACCOUNT
+              </button>
             </div>
           </div>
           <div>

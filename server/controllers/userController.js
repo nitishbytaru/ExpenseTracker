@@ -72,11 +72,15 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (user && user.password === password) {
-      req.session.user = user;
-      res.status(200).send("Login successful");
+    if (user) {
+      if (user.password === password) {
+        req.session.user = user;
+        res.status(200).send("Login successful");
+      } else {
+        res.status(401).send("Invalid email or password");
+      }
     } else {
-      res.status(401).send("Invalid email or password");
+      res.status(500).send("User dosenot exist");
     }
   } catch (error) {
     console.error("Error logging in:", error);
@@ -126,6 +130,22 @@ export const updateProfileData = async (req, res) => {
   }
 };
 
+//this route is used to delete the current user
+export const deleteAccount = async (req, res) => {
+  try {
+    await Expense.deleteMany({
+      user: req.session.user._id,
+    });
+    await User.deleteOne({
+      _id: req.session.user._id,
+    });
+    res.status(200).send("User delted successfully");
+  } catch (error) {
+    console.error("Error fetching history:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 export default {
   addExpense,
   history,
@@ -135,4 +155,5 @@ export default {
   logout,
   profile,
   updateProfileData,
+  deleteAccount,
 };

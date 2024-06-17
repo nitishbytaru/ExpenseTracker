@@ -1,4 +1,5 @@
 import axios from "axios";
+import { showErrorToast } from "../utils/toastUtils";
 
 const API_URL = "/home";
 
@@ -6,8 +7,10 @@ const API_URL = "/home";
 export const login = async (data) => {
   try {
     await axios.post(`${API_URL}/login`, data);
+    return true;
   } catch (error) {
-    console.log(error);
+    showErrorToast(error);
+    return false;
   }
 };
 
@@ -46,5 +49,14 @@ export const updateProfileData = async (Data) => {
   } catch (error) {
     console.log(error);
     return;
+  }
+};
+
+//api to delete current user
+export const deleteAccountReq = async () => {
+  try {
+    await axios.get(`${API_URL}/deleteAccount`);
+  } catch (error) {
+    console.log(error);
   }
 };

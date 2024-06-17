@@ -30,16 +30,18 @@ function Login() {
     if (email.trim() && password.trim()) {
       if (isValidEmail(email)) {
         try {
-          await login(userInput);
-          setIsLoggedIn(true);
-          setUserInput({
-            email: "",
-            password: "",
-          });
-          navigate("../");
-          showSuccessToast("Login Successful");
+          const res = await login(userInput);
+          if (res) {
+            setIsLoggedIn(true);
+            setUserInput({
+              email: "",
+              password: "",
+            });
+            navigate("../");
+            showSuccessToast("Login Successful");
+          }
         } catch (error) {
-          showErrorToast(error.response.data);
+          showErrorToast(error);
         }
       } else {
         showErrorToast("Given email is invalid. Please retry");

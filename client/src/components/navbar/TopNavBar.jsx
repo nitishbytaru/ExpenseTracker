@@ -6,8 +6,7 @@ import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined
 import { showErrorToast } from "../../utils/toastUtils";
 
 function TopNavBar({ toggleSideNav }) {
-  const { isLoggedIn, setIsLoggedIn, profile, setProfile } =
-    useContext(LoginContext);
+  const { isLoggedIn, profile, setProfile } = useContext(LoginContext);
 
   useEffect(() => {
     async function checkProfile() {
@@ -19,7 +18,7 @@ function TopNavBar({ toggleSideNav }) {
       }
     }
     checkProfile();
-  }, [isLoggedIn, setIsLoggedIn]);
+  }, [isLoggedIn, profile, setProfile]);
 
   return (
     <div className="bg-gray-800 h-16 flex items-center justify-between px-6 shadow-lg">
