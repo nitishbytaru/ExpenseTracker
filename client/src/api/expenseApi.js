@@ -21,3 +21,13 @@ export const addExpense = async (Data) => {
     return error;
   }
 };
+
+//api to delete transaction
+export const deleteTransaction = async (id) => {
+  try {
+    await axios.delete(`${API_URL}/deleteTransaction/${id}`);
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};

@@ -42,10 +42,10 @@ export const getProfile = async () => {
   }
 };
 
-//api to updateProfileData
+//api to updateProfileData(PUT)
 export const updateProfileData = async (Data) => {
   try {
-    await axios.get(`${API_URL}/updateProfileData`, Data);
+    await axios.put(`${API_URL}/updateProfileData`, Data);
   } catch (error) {
     console.log(error);
     return;

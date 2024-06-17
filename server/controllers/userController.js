@@ -33,6 +33,17 @@ export const history = async (req, res) => {
   }
 };
 
+//delete a transaction
+export const deleteTransaction = async (req, res) => {
+  try {
+    await Expense.deleteOne({ _id: req.params.id });
+    res.status(200).send("Transaction deleted successfully");
+  } catch (error) {
+    console.error("Error deleting transaction:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 //expense analysis
 export const analysis = async (req, res) => {
   try {
@@ -121,8 +132,6 @@ export const updateProfileData = async (req, res) => {
       { $set: { username, email, password } }
     );
     req.session.user = await User.findOne({ _id: req.session.user._id });
-    console.log(req.session.user);
-
     res.status(200).send("Data updated successfully");
   } catch (error) {
     console.error("Error fetching history:", error);
@@ -156,4 +165,5 @@ export default {
   profile,
   updateProfileData,
   deleteAccount,
+  deleteTransaction,
 };

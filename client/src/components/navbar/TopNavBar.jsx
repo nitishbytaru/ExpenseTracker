@@ -11,14 +11,18 @@ function TopNavBar({ toggleSideNav }) {
   useEffect(() => {
     async function checkProfile() {
       try {
-        const { data } = await getProfile();
-        setProfile(data);
+        const email = JSON.parse(localStorage.getItem("email"));
+        const password = JSON.parse(localStorage.getItem("password"));
+        if (email && password) {
+          const { data } = await getProfile();
+          setProfile(data);
+        }
       } catch (error) {
         showErrorToast(error.response.data);
       }
     }
-    checkProfile();
-  }, [isLoggedIn, profile, setProfile]);
+    if (isLoggedIn) checkProfile();
+  }, [isLoggedIn]);
 
   return (
     <div className="bg-gray-800 h-16 flex items-center justify-between px-6 shadow-lg">

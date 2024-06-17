@@ -11,7 +11,7 @@ function Login() {
     password: "",
   });
 
-  const { setIsLoggedIn } = useContext(LoginContext);
+  const { setIsLoggedIn, setProfile } = useContext(LoginContext);
   const navigate = useNavigate();
 
   function handleChange(event) {
@@ -30,16 +30,17 @@ function Login() {
     if (email.trim() && password.trim()) {
       if (isValidEmail(email)) {
         try {
-          const res = await login(userInput);
-          if (res) {
-            setIsLoggedIn(true);
-            setUserInput({
-              email: "",
-              password: "",
-            });
-            navigate("../");
-            showSuccessToast("Login Successful");
-          }
+          await login(userInput);
+          localStorage.setItem("email", JSON.stringify(email));
+          localStorage.setItem("password", JSON.stringify(password));
+          setIsLoggedIn(true);
+          setProfile(userInput);
+          setUserInput({
+            email: "",
+            password: "",
+          });
+          navigate("../");
+          showSuccessToast("Login Successful");
         } catch (error) {
           showErrorToast(error);
         }

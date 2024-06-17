@@ -3,8 +3,8 @@ import { Outlet, Navigate } from "react-router-dom";
 import LoginContext from "../context/LoginContext";
 
 function PrivateRoutes() {
-  const { isLoggedIn } = useContext(LoginContext);
-  return isLoggedIn ? <Outlet /> : <Navigate to="/" />;
+  const { isLoggedIn, profile } = useContext(LoginContext);
+  return isLoggedIn && profile ? <Outlet /> : <Navigate to="/" />;
 }
 
 export default PrivateRoutes;

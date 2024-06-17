@@ -16,7 +16,7 @@ router.get("/home/logout", userController.logout);
 router.get("/home/profile", userController.profile);
 
 //make the updates of details in the profile
-router.post("/home/updateProfileData", userController.updateProfileData);
+router.put("/home/updateProfileData", userController.updateProfileData);
 
 //this route is used to delete the current user
 router.get("/home/deleteAccount", userController.deleteAccount);
@@ -29,5 +29,8 @@ router.get("/home/history", userController.history);
 
 //expense analysis
 router.post("/home/analysis", userController.analysis);
+
+//delete a transaction
+router.delete("/home/deleteTransaction/:id", userController.deleteTransaction);
 
 export default router;

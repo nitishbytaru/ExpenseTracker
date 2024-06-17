@@ -11,6 +11,8 @@ function SideNavBar({ toggleSideNav }) {
   async function callLogout() {
     try {
       await logout();
+      localStorage.removeItem("email");
+      localStorage.removeItem("password");
       setIsLoggedIn(false);
       setProfile(undefined);
     } catch (error) {
