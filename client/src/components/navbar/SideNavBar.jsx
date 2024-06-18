@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import LoginContext from "../../context/LoginContext";
 import { NavLink } from "react-router-dom";
-import CloseTwoToneIcon from "@mui/icons-material/CloseTwoTone";
 import { showSuccessToast, showErrorToast } from "../../utils/toastUtils";
 import { logout } from "../../api/authApi";
+import LoginContext from "../../context/LoginContext";
+import CloseTwoToneIcon from "@mui/icons-material/CloseTwoTone";
 
 function SideNavBar({ toggleSideNav }) {
   const { setIsLoggedIn, setProfile } = useContext(LoginContext);

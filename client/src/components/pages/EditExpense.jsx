@@ -1,22 +1,16 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
+
 import LoginContext from "../../context/LoginContext";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { updateTransaction } from "../../api/expenseApi";
 import { showSuccessToast } from "../../utils/toastUtils";
-import { addExpense } from "../../api/expenseApi";
+import { useNavigate } from "react-router-dom";
 
-function TransactionForm() {
+function EditExpense() {
   const { profile, startDate, setStartDate, inputData, setInputData } =
     useContext(LoginContext);
 
-  useEffect(() => {
-    if (profile) {
-      setInputData((prevInputData) => ({
-        ...prevInputData,
-        user: profile._id,
-      }));
-    }
-  }, [profile]);
+  const navigate = useNavigate();
 
   const handleDateChange = (date) => {
     setStartDate(date);
@@ -35,30 +29,20 @@ function TransactionForm() {
   };
 
   const submitForm = async (event) => {
-    const { income, note, user } = inputData;
     event.preventDefault();
+    const { income, note, user, _id } = inputData;
     if (profile && income && note && user) {
       try {
-        await addExpense(inputData);
-        showSuccessToast("Transaction Added");
+        await updateTransaction(_id, inputData);
+        showSuccessToast("Transaction updated");
       } catch (error) {
         console.log(error);
       }
-      setInputData({
-        user: profile._id,
-        income: "",
-        note: "",
-        expense: "",
-        transactionDate: startDate,
-      });
+      navigate("/history");
     } else {
       console.log("error occurred");
     }
   };
-
-  if (!profile) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="min-h-full flex items-center justify-center bg-gray-900 text-white">
@@ -133,7 +117,7 @@ function TransactionForm() {
             <div id="transactionDate" name="transactionDate">
               <DatePicker
                 className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-                selected={startDate}
+                selected={inputData.transactionDate}
                 onChange={handleDateChange}
               />
             </div>
@@ -153,4 +137,4 @@ function TransactionForm() {
   );
 }
 
-export default TransactionForm;
+export default EditExpense;

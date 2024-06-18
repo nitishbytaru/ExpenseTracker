@@ -44,6 +44,23 @@ export const deleteTransaction = async (req, res) => {
   }
 };
 
+//delete a transaction
+export const updateTransaction = async (req, res) => {
+  try {
+    const { income, note, expense, transactionDate } = req.body;
+    await Expense.updateOne(
+      {
+        _id: req.params.id,
+      },
+      { $set: { income, note, expense, transactionDate } }
+    );
+    res.status(200).send("Transaction updated successfully");
+  } catch (error) {
+    console.error("Error updating transaction:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 //expense analysis
 export const analysis = async (req, res) => {
   try {
@@ -166,4 +183,5 @@ export default {
   updateProfileData,
   deleteAccount,
   deleteTransaction,
+  updateTransaction,
 };

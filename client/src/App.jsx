@@ -9,6 +9,7 @@ import {
   Signup,
   LandingPage,
   EditProfile,
+  EditExpense,
 } from "./components/index";
 import LoginContextProvider from "./context/LoginContextProvider";
 import PrivateRoutes from "./utils/PrivateRoutes";
@@ -31,6 +32,7 @@ function App() {
               />
               <Route path="history" element={<History />} exact />
               <Route path="editProfile" element={<EditProfile />} exact />
+              <Route path="editExpense" element={<EditExpense />} exact />
             </Route>
           </Route>
           <Route path="*" element={<NoPage />} />

@@ -30,8 +30,8 @@ function Login() {
     if (email.trim() && password.trim()) {
       if (isValidEmail(email)) {
         try {
-          await login(userInput);
-          localStorage.setItem("email", JSON.stringify(email));
+          const res = await login(userInput);
+          if(res){localStorage.setItem("email", JSON.stringify(email));
           localStorage.setItem("password", JSON.stringify(password));
           setIsLoggedIn(true);
           setProfile(userInput);
@@ -40,7 +40,7 @@ function Login() {
             password: "",
           });
           navigate("../");
-          showSuccessToast("Login Successful");
+          showSuccessToast("Login Successful");}
         } catch (error) {
           showErrorToast(error);
         }

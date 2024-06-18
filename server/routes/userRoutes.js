@@ -33,4 +33,7 @@ router.post("/home/analysis", userController.analysis);
 //delete a transaction
 router.delete("/home/deleteTransaction/:id", userController.deleteTransaction);
 
+//update a transaction
+router.put("/home/updateTransaction/:id", userController.updateTransaction);
+
 export default router;

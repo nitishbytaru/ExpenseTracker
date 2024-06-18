@@ -31,3 +31,19 @@ export const deleteTransaction = async (id) => {
     return error;
   }
 };
+
+//api to update transaction
+export const updateTransaction = async (id, Data) => {
+  try {
+    const { income, note, expense, transactionDate } = Data;
+    await axios.put(`${API_URL}/updateTransaction/${id}`, {
+      income: parseInt(income),
+      note,
+      expense: parseInt(expense),
+      transactionDate,
+    });
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};

@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import RefreshTwoToneIcon from "@mui/icons-material/RefreshTwoTone";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { getHistory, deleteTransaction } from "../../api/expenseApi";
+import { showSuccessToast } from "../../utils/toastUtils";
 import { toast } from "sonner";
+import LoginContext from "../../context/LoginContext";
+import { useNavigate } from "react-router-dom";
 
 function History() {
   const [expenseHistory, setExpenseHistory] = useState([]);
   const [historyStartDate, setHistoryStartDate] = useState(new Date());
   const [historyEndDate, setHistoryEndDate] = useState(new Date());
+
+  const { inputData, setInputData } = useContext(LoginContext);
+  const navigate = useNavigate();
 
   async function fetchExpensesHistory() {
     try {
@@ -42,6 +49,12 @@ function History() {
         },
       },
     });
+  }
+
+  function editTransactionCall(id) {
+    const Data = expenseHistory.find((obj) => obj._id === id);
+    setInputData(Data);
+    navigate("/editExpense");
   }
 
   return (
@@ -106,6 +119,15 @@ function History() {
                     <td className="px-4 py-2">{income}</td>
                     <td className="px-4 py-2 grid grid-flow-col">
                       <span className="text-end">{expense}</span>
+                      <span className="text-end">
+                        <button
+                          onClick={() => {
+                            editTransactionCall(_id);
+                          }}
+                        >
+                          <EditOutlinedIcon />
+                        </button>
+                      </span>
                       <span className="text-end">
                         <button
                           onClick={() => {

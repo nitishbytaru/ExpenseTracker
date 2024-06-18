@@ -6,3 +6,4 @@ export { default as LandingPage } from "./pages/LandingPage";
 export { default as Login } from "./registration/Login";
 export { default as Signup } from "./registration/Signup";
 export { default as EditProfile } from "./pages/EditProfile";
+export { default as EditExpense } from "./pages/EditExpense";
