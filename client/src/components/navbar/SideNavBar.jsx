@@ -1,20 +1,17 @@
-import React, { useContext } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import { showSuccessToast, showErrorToast } from "../../utils/toastUtils";
 import { logout } from "../../api/authApi";
-import LoginContext from "../../context/LoginContext";
 import CloseTwoToneIcon from "@mui/icons-material/CloseTwoTone";
+import useAuth from "../../hooks/useAuth";
 
 function SideNavBar({ toggleSideNav }) {
-  const { setIsLoggedIn, setProfile } = useContext(LoginContext);
+  const { useLogout } = useAuth();
 
   async function callLogout() {
     try {
       await logout();
-      localStorage.removeItem("email");
-      localStorage.removeItem("password");
-      setIsLoggedIn(false);
-      setProfile(undefined);
+      useLogout(); // this is costum hook for doing the work after logging out form the server. Mostly works on the client side
     } catch (error) {
       showErrorToast(error.response.data);
     }

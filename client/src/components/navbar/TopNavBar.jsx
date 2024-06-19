@@ -1,28 +1,10 @@
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { getProfile } from "../../api/authApi";
-import LoginContext from "../../context/LoginContext";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import { showErrorToast } from "../../utils/toastUtils";
+import useAuth from "../../hooks/useAuth";
 
 function TopNavBar({ toggleSideNav }) {
-  const { isLoggedIn, profile, setProfile } = useContext(LoginContext);
-
-  useEffect(() => {
-    async function checkProfile() {
-      try {
-        const email = JSON.parse(localStorage.getItem("email"));
-        const password = JSON.parse(localStorage.getItem("password"));
-        if (email && password) {
-          const { data } = await getProfile();
-          setProfile(data);
-        }
-      } catch (error) {
-        showErrorToast(error.response.data);
-      }
-    }
-    if (isLoggedIn) checkProfile();
-  }, [isLoggedIn]);
+  const { profile } = useAuth();
 
   return (
     <div className="bg-gray-800 h-16 flex items-center justify-between px-6 shadow-lg">

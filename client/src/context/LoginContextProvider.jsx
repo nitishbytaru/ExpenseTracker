@@ -22,6 +22,15 @@ const LoginContextProvider = ({ children }) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (profile) {
+      setInputData((prevInputData) => ({
+        ...prevInputData,
+        user: profile._id,
+      }));
+    }
+  }, [profile]);
+
   return (
     <LoginContext.Provider
       value={{
