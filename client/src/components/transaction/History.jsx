@@ -15,7 +15,7 @@ function History() {
   const [historyStartDate, setHistoryStartDate] = useState(new Date());
   const [historyEndDate, setHistoryEndDate] = useState(new Date());
 
-  const { setInputData } = useContext(LoginContext);
+  const { inputData, setInputData } = useContext(LoginContext);
   const navigate = useNavigate();
 
   async function fetchExpensesHistory() {
@@ -34,7 +34,6 @@ function History() {
       console.error("Error fetching expense history:", error);
     }
   }
-
   useEffect(() => {
     fetchExpensesHistory();
   }, []);

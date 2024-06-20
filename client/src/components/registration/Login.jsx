@@ -1,30 +1,46 @@
-import React from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
-import useFormValidate from "../../hooks/useFormValidate";
 import { login } from "../../api/authApi";
-import { showErrorToast } from "../../utils/toastUtils";
+import LoginContext from "../../context/LoginContext";
+import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
 
 function Login() {
-  const { useEmailValidate, useHandleChange } = useFormValidate();
-
-  const [userInput, handleChange] = useHandleChange({
+  const [userInput, setUserInput] = useState({
     email: "",
     password: "",
   });
 
-  const { useLogin } = useAuth();
+  const { setIsLoggedIn, setProfile } = useContext(LoginContext);
+  const navigate = useNavigate();
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setUserInput({ ...userInput, [name]: value });
+  }
+
+  function isValidEmail(email) {
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return emailRegex.test(email);
+  }
 
   const submitForm = async (e) => {
     e.preventDefault();
     const { email, password } = userInput;
     if (email.trim() && password.trim()) {
-      if (useEmailValidate(email)) {
+      if (isValidEmail(email)) {
         try {
           const res = await login(userInput);
-          if (res) {
-            await useLogin(userInput);
-          }
+          if(res){localStorage.setItem("email", JSON.stringify(email));
+          localStorage.setItem("password", JSON.stringify(password));
+          setIsLoggedIn(true);
+          setProfile(userInput);
+          setUserInput({
+            email: "",
+            password: "",
+          });
+          navigate("../");
+          showSuccessToast("Login Successful");}
         } catch (error) {
           showErrorToast(error);
         }

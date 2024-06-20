@@ -1,36 +1,52 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { signup, login } from "../../api/authApi";
-import { showErrorToast } from "../../utils/toastUtils";
-import useFormValidate from "../../hooks/useFormValidate";
-import useAuth from "../../hooks/useAuth";
+import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
+import { useNavigate } from "react-router-dom";
+import LoginContext from "../../context/LoginContext";
 
 function Signup() {
-  const { useEmailValidate, useHandleChange } = useFormValidate();
-  const [userInput, handleChange] = useHandleChange({
+  const { setIsLoggedIn } = useContext(LoginContext);
+  const navigate = useNavigate();
+
+  const [userInput, setUserInput] = useState({
     username: "",
     email: "",
     password: "",
     Cpassword: "",
   });
 
-  const { useLogin } = useAuth();
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setUserInput({ ...userInput, [name]: value });
+  }
+
+  function isValidEmail(email) {
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return emailRegex.test(email);
+  }
 
   const submitForm = async (e) => {
     e.preventDefault();
     const { username, email, password, Cpassword } = userInput;
     if (email && password) {
-      if (useEmailValidate(email)) {
+      if (isValidEmail(email)) {
         if (password === Cpassword) {
           try {
-            const res = await signup({ username, email, password });
-            if (res) {
-              await login(userInput);
-              await useLogin(userInput);
-            }
+            await signup({ username, email, password });
+            showSuccessToast("Registration successful");
+            await login(userInput);
+            setIsLoggedIn(true);
+            navigate("../");
           } catch (error) {
             console.log(error);
-            showErrorToast(error);
+            showErrorToast(error.response.data);
           }
+          setUserInput({
+            username: "",
+            email: "",
+            password: "",
+            Cpassword: "",
+          });
         } else {
           showErrorToast("Passwords do not match");
         }

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { showErrorToast, showSuccessToast } from "../utils/toastUtils";
+import { showErrorToast } from "../utils/toastUtils";
 
 const API_URL = "/home";
 
@@ -18,12 +18,8 @@ export const login = async (data) => {
 export const signup = async (data) => {
   try {
     await axios.post(`${API_URL}/signup`, data);
-    showSuccessToast("Registration successful");
-    return true;
   } catch (error) {
     console.log(error);
-    showErrorToast(error);
-    return false;
   }
 };
 

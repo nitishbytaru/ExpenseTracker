@@ -1,46 +1,56 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import LoginContext from "../../context/LoginContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { showSuccessToast } from "../../utils/toastUtils";
 import { addExpense } from "../../api/expenseApi";
-import useFormValidate from "../../hooks/useFormValidate";
 
 function TransactionForm() {
-  const { useHandleChange, useHandleDateChange } = useFormValidate();
-
   const { profile, startDate, setStartDate, inputData, setInputData } =
     useContext(LoginContext);
 
-  const [currentInputData, handleChange] = useHandleChange(inputData);
-  const [currentStartDate, handleDateChange] = useHandleDateChange(startDate);
-
   useEffect(() => {
-    setStartDate(currentStartDate);
+    if (profile) {
+      setInputData((prevInputData) => ({
+        ...prevInputData,
+        user: profile._id,
+      }));
+    }
+  }, [profile]);
+
+  const handleDateChange = (date) => {
+    setStartDate(date);
     setInputData((prevInputData) => ({
       ...prevInputData,
-      transactionDate: currentStartDate,
-      user: profile ? profile._id : prevInputData.user,
+      transactionDate: date,
     }));
-  }, [currentStartDate, profile, setStartDate, setInputData]);
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setInputData((prevInputData) => ({
+      ...prevInputData,
+      [name]: value,
+    }));
+  };
 
   const submitForm = async (event) => {
-    const { income, note, user } = currentInputData;
+    const { income, note, user } = inputData;
     event.preventDefault();
     if (profile && income && note && user) {
       try {
-        await addExpense(currentInputData);
+        await addExpense(inputData);
         showSuccessToast("Transaction Added");
-        setInputData({
-          user: profile._id,
-          income: "",
-          note: "",
-          expense: "",
-          transactionDate: startDate,
-        });
       } catch (error) {
         console.log(error);
       }
+      setInputData({
+        user: profile._id,
+        income: "",
+        note: "",
+        expense: "",
+        transactionDate: startDate,
+      });
     } else {
       console.log("error occurred");
     }
@@ -67,7 +77,7 @@ function TransactionForm() {
               type="number"
               id="income"
               name="income"
-              value={currentInputData.income}
+              value={inputData.income}
               className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               onChange={handleChange}
               placeholder="999"
@@ -86,7 +96,7 @@ function TransactionForm() {
               type="text"
               id="note"
               name="note"
-              value={currentInputData.note}
+              value={inputData.note}
               onChange={handleChange}
               className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               placeholder="salary"
@@ -105,7 +115,7 @@ function TransactionForm() {
               type="number"
               id="expense"
               name="expense"
-              value={currentInputData.expense}
+              value={inputData.expense}
               className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               onChange={handleChange}
               placeholder="999"
