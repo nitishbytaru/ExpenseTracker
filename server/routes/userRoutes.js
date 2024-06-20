@@ -27,6 +27,9 @@ router.post("/home/expense", userController.addExpense);
 //get transaction history
 router.get("/home/history", userController.history);
 
+//get transaction history with filters
+router.post("/home/filteredHistory", userController.filteredHistory);
+
 //expense analysis
 router.post("/home/analysis", userController.analysis);
 

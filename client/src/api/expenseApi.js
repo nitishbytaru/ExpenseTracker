@@ -2,10 +2,20 @@ import axios from "axios";
 
 const API_URL = "/home";
 
-//api for login
+//api for feteching the expense history
 export const getHistory = async () => {
   try {
     return await axios.get(`${API_URL}/history`);
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+//api for fetching the expense history with the date filter
+export const getFilteredHistory = async (data) => {
+  try {
+    return await axios.post(`${API_URL}/filteredHistory`, data);
   } catch (error) {
     console.log(error);
     return error;

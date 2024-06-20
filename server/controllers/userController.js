@@ -33,6 +33,24 @@ export const history = async (req, res) => {
   }
 };
 
+//transaction history with filter
+export const filteredHistory = async (req, res) => {
+  try {
+    const { historyStartDate, historyEndDate } = req.body;
+    const expensesHistory = await Expense.find({
+      user: req.session.user._id,
+      transactionDate: {
+        $gt: historyStartDate,
+        $lt: historyEndDate,
+      },
+    });
+    res.status(200).send(expensesHistory);
+  } catch (error) {
+    console.error("Error fetching history:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 //delete a transaction
 export const deleteTransaction = async (req, res) => {
   try {
@@ -184,4 +202,5 @@ export default {
   deleteAccount,
   deleteTransaction,
   updateTransaction,
+  filteredHistory,
 };

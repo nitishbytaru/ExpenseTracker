@@ -4,7 +4,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import RefreshTwoToneIcon from "@mui/icons-material/RefreshTwoTone";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { getHistory, deleteTransaction } from "../../api/expenseApi";
+import {
+  getHistory,
+  deleteTransaction,
+  getFilteredHistory,
+} from "../../api/expenseApi";
 import { showSuccessToast } from "../../utils/toastUtils";
 import { toast } from "sonner";
 import LoginContext from "../../context/LoginContext";
@@ -14,13 +18,17 @@ function History() {
   const [expenseHistory, setExpenseHistory] = useState([]);
   const [historyStartDate, setHistoryStartDate] = useState(new Date());
   const [historyEndDate, setHistoryEndDate] = useState(new Date());
+  const [loading, setLoading] = useState(false);
 
-  const { inputData, setInputData } = useContext(LoginContext);
+  const { setInputData } = useContext(LoginContext);
   const navigate = useNavigate();
 
-  async function fetchExpensesHistory() {
+  async function fetchExpenses(isFiltered = false) {
+    setLoading(true);
     try {
-      const { data } = await getHistory();
+      const { data } = isFiltered
+        ? await getFilteredHistory({ historyStartDate, historyEndDate })
+        : await getHistory();
       const formattedExpenseHistory = data.map((expense) => ({
         ...expense,
         transactionDate: new Date(expense.transactionDate).toLocaleDateString(),
@@ -32,20 +40,29 @@ function History() {
       );
     } catch (error) {
       console.error("Error fetching expense history:", error);
+      toast.error("Error fetching expense history");
+    } finally {
+      setLoading(false);
     }
   }
+
   useEffect(() => {
-    fetchExpensesHistory();
+    fetchExpenses();
   }, []);
 
   function deleteTransactionCall(id) {
     toast.warning("Confirm to delete expense", {
       action: {
         label: "Confirm",
-        onClick: () => {
-          deleteTransaction(id);
-          fetchExpensesHistory();
-          showSuccessToast("Account deleted successfully");
+        onClick: async () => {
+          try {
+            await deleteTransaction(id);
+            fetchExpenses();
+            showSuccessToast("Expense deleted successfully");
+          } catch (error) {
+            console.error("Error deleting transaction:", error);
+            toast.error("Error deleting transaction");
+          }
         },
       },
     });
@@ -83,7 +100,8 @@ function History() {
           </div>
           <button
             className="text-white p-2"
-            onClick={() => fetchExpensesHistory()}
+            onClick={() => fetchExpenses(true)}
+            disabled={loading}
           >
             <RefreshTwoToneIcon fontSize="large" />
           </button>
@@ -108,37 +126,45 @@ function History() {
               </tr>
             </thead>
             <tbody>
-              {expenseHistory.map(
-                ({ _id, income, note, expense, transactionDate }) => (
-                  <tr
-                    key={_id}
-                    className="text-center font-medium text-white whitespace-nowrap bg-gray-900 border-b border-gray-700"
-                  >
-                    <td className="px-4 py-2">{transactionDate}</td>
-                    <td className="px-4 py-2">{note}</td>
-                    <td className="px-4 py-2">{income}</td>
-                    <td className="px-4 py-2 grid grid-flow-col">
-                      <span className="text-end">{expense}</span>
-                      <span className="text-end">
-                        <button
-                          onClick={() => {
-                            editTransactionCall(_id);
-                          }}
-                        >
-                          <EditOutlinedIcon />
-                        </button>
-                      </span>
-                      <span className="text-end">
-                        <button
-                          onClick={() => {
-                            deleteTransactionCall(_id);
-                          }}
-                        >
-                          <DeleteOutlinedIcon />
-                        </button>
-                      </span>
-                    </td>
-                  </tr>
+              {loading ? (
+                <tr>
+                  <td colSpan="4" className="text-center text-white py-4">
+                    Loading...
+                  </td>
+                </tr>
+              ) : (
+                expenseHistory.map(
+                  ({ _id, income, note, expense, transactionDate }) => (
+                    <tr
+                      key={_id}
+                      className="text-center font-medium text-white whitespace-nowrap bg-gray-900 border-b border-gray-700"
+                    >
+                      <td className="px-4 py-2">{transactionDate}</td>
+                      <td className="px-4 py-2">{note}</td>
+                      <td className="px-4 py-2">{income}</td>
+                      <td className="px-4 py-2 grid grid-flow-col">
+                        <span className="text-end">{expense}</span>
+                        <span className="text-end">
+                          <button
+                            onClick={() => {
+                              editTransactionCall(_id);
+                            }}
+                          >
+                            <EditOutlinedIcon />
+                          </button>
+                        </span>
+                        <span className="text-end">
+                          <button
+                            onClick={() => {
+                              deleteTransactionCall(_id);
+                            }}
+                          >
+                            <DeleteOutlinedIcon />
+                          </button>
+                        </span>
+                      </td>
+                    </tr>
+                  )
                 )
               )}
             </tbody>
