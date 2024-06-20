@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { login } from "../../api/authApi";
 import LoginContext from "../../context/LoginContext";
-import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
+import { showErrorToast, showSuccessToast,showWarnToast } from "../../utils/toastUtils";
 
 function Login() {
   const [userInput, setUserInput] = useState({
@@ -27,26 +27,29 @@ function Login() {
   const submitForm = async (e) => {
     e.preventDefault();
     const { email, password } = userInput;
-    if (email.trim() && password.trim()) {
-      if (isValidEmail(email)) {
-        try {
-          const res = await login(userInput);
-          if(res){localStorage.setItem("email", JSON.stringify(email));
-          localStorage.setItem("password", JSON.stringify(password));
-          setIsLoggedIn(true);
-          setProfile(userInput);
-          setUserInput({
-            email: "",
-            password: "",
-          });
-          navigate("../");
-          showSuccessToast("Login Successful");}
-        } catch (error) {
-          showErrorToast(error);
-        }
-      } else {
-        showErrorToast("Given email is invalid. Please retry");
+
+    if (!email && !password)
+      return showWarnToast("Email and Password Required");
+
+    if (!isValidEmail(email))
+      return showWarnToast("Given email is invalid. Please retry");
+
+    try {
+      const res = await login(userInput);
+      if (res) {
+        localStorage.setItem("email", JSON.stringify(email));
+        localStorage.setItem("password", JSON.stringify(password));
+        setIsLoggedIn(true);
+        setProfile(userInput);
+        setUserInput({
+          email: "",
+          password: "",
+        });
+        navigate("../");
+        showSuccessToast("Login Successful");
       }
+    } catch (error) {
+      showErrorToast(error);
     }
   };
 

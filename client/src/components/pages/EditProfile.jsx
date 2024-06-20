@@ -7,7 +7,11 @@ import {
   logout,
   updateProfileData,
 } from "../../api/authApi";
-import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
+import {
+  showErrorToast,
+  showSuccessToast,
+  showWarnToast,
+} from "../../utils/toastUtils";
 import LoginContext from "../../context/LoginContext";
 
 function EditProfile() {
@@ -46,18 +50,18 @@ function EditProfile() {
   async function submitForm(e) {
     e.preventDefault();
     const { username, email, password } = userData;
-    if (email && password) {
-      if (isValidEmail(email)) {
-        try {
-          await updateProfileData({ username, email, password });
-          showSuccessToast("Details updated successfully");
-          navigate("/transactionform");
-        } catch (error) {
-          console.log(error);
-        }
-      } else {
-        showErrorToast("Invalid email address");
-      }
+
+    if (!email && !password)
+      return showWarnToast("Email and Password required");
+
+    if (!isValidEmail(email)) return showWarnToast("Invalid email address");
+
+    try {
+      await updateProfileData({ username, email, password });
+      showSuccessToast("Details updated successfully");
+      navigate("/transactionform");
+    } catch (error) {
+      console.log(error);
     }
   }
 

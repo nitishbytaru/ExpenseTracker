@@ -1,6 +1,10 @@
 import React, { useState, useContext } from "react";
 import { signup, login } from "../../api/authApi";
-import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
+import {
+  showErrorToast,
+  showSuccessToast,
+  showWarnToast,
+} from "../../utils/toastUtils";
 import { useNavigate } from "react-router-dom";
 import LoginContext from "../../context/LoginContext";
 
@@ -28,32 +32,31 @@ function Signup() {
   const submitForm = async (e) => {
     e.preventDefault();
     const { username, email, password, Cpassword } = userInput;
-    if (email && password) {
-      if (isValidEmail(email)) {
-        if (password === Cpassword) {
-          try {
-            await signup({ username, email, password });
-            showSuccessToast("Registration successful");
-            await login(userInput);
-            setIsLoggedIn(true);
-            navigate("../");
-          } catch (error) {
-            console.log(error);
-            showErrorToast(error.response.data);
-          }
-          setUserInput({
-            username: "",
-            email: "",
-            password: "",
-            Cpassword: "",
-          });
-        } else {
-          showErrorToast("Passwords do not match");
-        }
-      } else {
-        showErrorToast("Invalid email address");
-      }
+
+    if (!email && !password)
+      return showWarnToast("Email and Password Required");
+
+    if (!isValidEmail(email))
+      return showWarnToast("Given email is invalid. Please retry");
+
+    if (password !== Cpassword) return showWarnToast("Passwords do not match");
+
+    try {
+      await signup({ username, email, password });
+      showSuccessToast("Registration successful");
+      await login(userInput);
+      setIsLoggedIn(true);
+      navigate("../");
+    } catch (error) {
+      console.log(error);
+      showErrorToast(error);
     }
+    setUserInput({
+      username: "",
+      email: "",
+      password: "",
+      Cpassword: "",
+    });
   };
 
   return (

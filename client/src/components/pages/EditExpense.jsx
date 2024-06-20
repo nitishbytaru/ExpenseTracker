@@ -31,17 +31,16 @@ function EditExpense() {
   const submitForm = async (event) => {
     event.preventDefault();
     const { income, note, user, _id } = inputData;
-    if (profile && income && note && user) {
-      try {
-        await updateTransaction(_id, inputData);
-        showSuccessToast("Transaction updated");
-      } catch (error) {
-        console.log(error);
-      }
-      navigate("/history");
-    } else {
-      console.log("error occurred");
+
+    if (!profile && !income && !note && !user) console.log("error occurred");
+    
+    try {
+      await updateTransaction(_id, inputData);
+      showSuccessToast("Transaction updated");
+    } catch (error) {
+      console.log(error);
     }
+    navigate("/history");
   };
 
   return (

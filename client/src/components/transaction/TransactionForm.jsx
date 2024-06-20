@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import LoginContext from "../../context/LoginContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { showSuccessToast } from "../../utils/toastUtils";
+import { showSuccessToast, showWarnToast } from "../../utils/toastUtils";
 import { addExpense } from "../../api/expenseApi";
 
 function TransactionForm() {
@@ -37,23 +37,21 @@ function TransactionForm() {
   const submitForm = async (event) => {
     const { income, note, user } = inputData;
     event.preventDefault();
-    if (profile && income && note && user) {
-      try {
-        await addExpense(inputData);
-        showSuccessToast("Transaction Added");
-      } catch (error) {
-        console.log(error);
-      }
-      setInputData({
-        user: profile._id,
-        income: "",
-        note: "",
-        expense: "",
-        transactionDate: startDate,
-      });
-    } else {
-      console.log("error occurred");
+    if (!profile && !income && !note && !user)
+      return showWarnToast("Input Fields are missing");
+    try {
+      await addExpense(inputData);
+      showSuccessToast("Transaction Added");
+    } catch (error) {
+      console.log(error);
     }
+    setInputData({
+      user: profile._id,
+      income: "",
+      note: "",
+      expense: "",
+      transactionDate: startDate,
+    });
   };
 
   if (!profile) {
