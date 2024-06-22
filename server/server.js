@@ -20,7 +20,7 @@ app.use(
 
 app.use(bodyParser.json());
 app.use(sessionMiddleware);
-app.use("", userRoutes);
+app.use("/api", userRoutes); // Prefix all routes with /api
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
