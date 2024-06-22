@@ -1,12 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// https://vitejs.dev/config/
 export default defineConfig({
   server: {
     proxy: {
-      // "/home": "http://localhost:3000",
-      "/home": "https://expense-tracker-gz2i.vercel.app",
+      "/api": {
+        target: "http://localhost:3000", // Your local backend server
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
   plugins: [react()],
