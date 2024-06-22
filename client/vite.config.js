@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       // "/home": "http://localhost:3000",
-      "/home": "https://expense-tracker-sandy-rho.vercel.app/",
+      "/home": "https://expense-tracker-gz2i.vercel.app/",
     },
   },
   plugins: [react()],
