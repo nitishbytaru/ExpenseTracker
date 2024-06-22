@@ -12,7 +12,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://Expense_Tracker.onrender.com",
+    origin: "https://expense-tracker-sandy-rho.vercel.app/",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   })

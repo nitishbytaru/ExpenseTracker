@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       // "/home": "http://localhost:3000",
-      "/home": "https://Expense_Tracker.onrender.com",
+      "/home": "https://expense-tracker-sandy-rho.vercel.app/",
     },
   },
   plugins: [react()],
