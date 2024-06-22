@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "/home";
+const API_URL = "https://expense-tracker-gz2i.vercel.app";
 
 //api for feteching the expense history
 export const getHistory = async () => {
