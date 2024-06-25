@@ -62,7 +62,7 @@ export const deleteTransaction = async (req, res) => {
   }
 };
 
-//delete a transaction
+//update a transaction
 export const updateTransaction = async (req, res) => {
   try {
     const { income, note, expense, transactionDate } = req.body;
