@@ -1,11 +1,12 @@
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import dotenv from "dotenv";
+import { DB_NAME } from "../constants.js";
 
 dotenv.config();
 
 const store = MongoStore.create({
-  mongoUrl: process.env.DB_URI,
+  mongoUrl: `${process.env.MONGO_URL}/${DB_NAME}`,
   crypto: {
     secret: process.env.SECRET,
   },

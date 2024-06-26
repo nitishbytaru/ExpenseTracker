@@ -1,11 +1,16 @@
+import dotenv from "dotenv";
+
 import express from "express";
 import bodyParser from "body-parser";
-import dotenv from "dotenv";
-import db from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import sessionMiddleware from "./middleware/session.js";
+import connectDB from "./db/index.js";
 
-dotenv.config();
+dotenv.config({
+  path: "./env",
+});
+
+connectDB();
 
 const app = express();
 
