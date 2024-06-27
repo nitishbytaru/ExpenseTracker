@@ -1,5 +1,5 @@
-import Expense from "../models/transaction.js";
-import User from "../models/users.js";
+import Expense from "../models/transaction.model.js";
+import User from "../models/user.mondel.js";
 
 //add expense
 export const addExpense = async (req, res) => {
