@@ -6,7 +6,8 @@ import {
   profile,
   updateProfileData,
   deleteAccount,
-} from "../controllers/userController";
+} from "../controllers/user.controller.js";
+import { upload } from "../middleware/multer.middleware.js";
 
 const router = Router();
 

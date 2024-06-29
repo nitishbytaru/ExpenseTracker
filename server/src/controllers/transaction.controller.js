@@ -1,80 +1,110 @@
-import { asyncHandler } from "../utils/asyncHandler";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { Transaction } from "../models/transaction.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 //add expense
 const addExpense = asyncHandler(async (req, res) => {
   const { user, income, note, expense, transactionDate } = req.body;
+
+  if (
+    [user, income, note, expense, transactionDate].some(
+      (field) => field?.trim() === ""
+    )
+  ) {
+    throw new ApiError(400, "Fill all the fields");
+  }
+
   try {
-    const newexpense = new Expense({
+    const transaction = await Transaction.create({
       user,
       income,
       note,
       expense,
       transactionDate,
     });
-    await newexpense.save();
-    res.status(201).send("Expense added successfully");
+
+    res
+      .status(201)
+      .json(new ApiResponse(201, transaction, "Expense added successfully"));
   } catch (error) {
-    console.error("Error adding expense", error);
-    res.status(500).send("internal server Error");
+    throw new ApiError(500, `Error adding expense${error}`);
   }
 });
 
 //transaction history
 const history = asyncHandler(async (req, res) => {
   try {
-    const expensesHistory = await Expense.find({
+    const transactions = await Transaction.find({
       user: req.session.user._id,
     });
-    res.status(200).send(expensesHistory);
+    res
+      .status(200)
+      .json(new ApiResponse(200, transactions, "Transactions history"));
   } catch (error) {
-    console.error("Error fetching history:", error);
-    res.status(500).send("Internal Server Error");
+    throw new ApiError(500, `Error fetching history: ${error}`);
   }
 });
 
 //transaction history with filter
 const filteredHistory = asyncHandler(async (req, res) => {
+  const { historyStartDate, historyEndDate } = req.body;
+
+  if (
+    [historyStartDate, historyEndDate].some((field) => field?.trim() === "")
+  ) {
+    throw new ApiError(400, "Date fields are empty");
+  }
+
   try {
-    const { historyStartDate, historyEndDate } = req.body;
-    const expensesHistory = await Expense.find({
+    const transactionHistory = await Transaction.find({
       user: req.session.user._id,
       transactionDate: {
         $gt: historyStartDate,
         $lt: historyEndDate,
       },
     });
-    res.status(200).send(expensesHistory);
+    res
+      .status(200)
+      .json(new ApiResponse(200, transactionHistory, "Transactions history"));
   } catch (error) {
-    console.error("Error fetching history:", error);
-    res.status(500).send("Internal Server Error");
+    throw new ApiError(500, `Error fetching history: ${error}`);
   }
 });
 
 //delete a transaction
 const deleteTransaction = asyncHandler(async (req, res) => {
+  const { id } = req.params;
   try {
-    await Expense.deleteOne({ _id: req.params.id });
-    res.status(200).send("Transaction deleted successfully");
+    const transaction = await Transaction.findByIdAndDelete(id);
+    res
+      .send(200)
+      .json(
+        new ApiResponse(200, transaction, "Transaction deleted successfully")
+      );
   } catch (error) {
-    console.error("Error deleting transaction:", error);
-    res.status(500).send("Internal Server Error");
+    throw new ApiError(500, `Error deleting transaction: ${error}`);
   }
 });
 
 //update a transaction
 const updateTransaction = asyncHandler(async (req, res) => {
+  const { income, note, expense, transactionDate } = req.body;
+  const { id } = req.params;
   try {
-    const { income, note, expense, transactionDate } = req.body;
-    await Expense.updateOne(
-      {
-        _id: req.params.id,
-      },
-      { $set: { income, note, expense, transactionDate } }
-    );
-    res.status(200).send("Transaction updated successfully");
+    const transaction = await Transaction.findByIdAndUpdate(id, {
+      income,
+      note,
+      expense,
+      transactionDate,
+    });
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, transaction, "Transaction updated successfully")
+      );
   } catch (error) {
-    console.error("Error updating transaction:", error);
-    res.status(500).send("Internal Server Error");
+    throw new ApiError(500, `Error updating transaction: ${error}`);
   }
 });
 

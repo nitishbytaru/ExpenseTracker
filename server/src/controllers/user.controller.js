@@ -1,6 +1,7 @@
-import { asyncHandler } from "../utils/asyncHandler";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.mondel.js  ";
+import { Transaction } from "../models/transaction.model.js";
 import { uploadToClounary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
@@ -57,21 +58,25 @@ const registerUser = asyncHandler(async (req, res) => {
 //login user
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+
+  if ([email, password].some((field) => field?.trim() === "")) {
+    throw new ApiError(400, "Fill all the fields");
+  }
+
   try {
     const user = await User.findOne({ email });
-    if (user) {
-      if (user.password === password) {
-        req.session.user = user;
-        res.status(200).send("Login successful");
-      } else {
-        res.status(401).send("Invalid email or password");
-      }
-    } else {
-      res.status(500).send("User dosenot exist");
+
+    if (!user) {
+      throw new ApiError(400, "User not found");
     }
+
+    if (user.password !== password) {
+      throw new ApiError(401, "Invalid Password");
+    }
+
+    return res.status(200).json(new ApiResponse(200, true, "Login Successful"));
   } catch (error) {
-    console.error("Error logging in:", error);
-    res.status(500).send("Internal Server Error");
+    throw new ApiError(500, `Error logging in user: ${error}`);
   }
 });
 
@@ -80,20 +85,21 @@ const logoutUser = asyncHandler(async (req, res) => {
   if (req.session && req.session.user) {
     delete req.session.user;
   }
-  res.status(200).send("Logged out successfully");
+  res.status(200).json(new ApiResponse(200, "Logout Successful"));
 });
 
 //user profile
 const profile = asyncHandler(async (req, res) => {
   try {
-    if (req.session && req.session.user) {
-      res.status(200).send(req.session.user);
-    } else {
-      res.status(401).send("Not logged in");
+    if (!req.session && !req.session.user) {
+      throw new ApiError(401, "Not Logged in");
     }
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, req.session.user, "Data sent Successfully"));
   } catch (error) {
-    console.error("Error fetching history:", error);
-    res.status(500).send("Internal Server Error");
+    throw new ApiError(500, `Error fetching data: ${error}`);
   }
 });
 
@@ -112,27 +118,33 @@ const updateProfileData = asyncHandler(async (req, res) => {
       },
       { $set: { username, email, password } }
     );
+
     req.session.user = await User.findOne({ _id: req.session.user._id });
-    res.status(200).send("Data updated successfully");
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, true, "Profile Updated Successfully"));
   } catch (error) {
-    console.error("Error fetching history:", error);
-    res.status(500).send("Internal Server Error");
+    throw new ApiError(500, `Error fetching data: ${error}`);
   }
 });
 
 //this route is used to delete the current user
 const deleteAccount = asyncHandler(async (req, res) => {
   try {
-    await Expense.deleteMany({
+    await Transaction.deleteMany({
       user: req.session.user._id,
     });
+
     await User.deleteOne({
       _id: req.session.user._id,
     });
-    res.status(200).send("User delted successfully");
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, true, "User delted successfully"));
   } catch (error) {
-    console.error("Error fetching history:", error);
-    res.status(500).send("Internal Server Error");
+    throw new ApiError(500, `Error fetching data: ${error}`);
   }
 });
 
