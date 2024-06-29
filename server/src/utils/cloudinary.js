@@ -15,9 +15,7 @@ const uploadToClounary = async (localFilePath) => {
       resource_type: "auto",
     });
 
-    console.log("file Uploaded in cloudnary", response.url);
-    fs.unlinkSync(localFilePath);
-
+    fs.unlinkSync(localFilePath); 
     return response;
   } catch (error) {
     console.log(error);

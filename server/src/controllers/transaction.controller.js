@@ -28,7 +28,8 @@ const addExpense = asyncHandler(async (req, res) => {
       .status(201)
       .json(new ApiResponse(201, transaction, "Expense added successfully"));
   } catch (error) {
-    throw new ApiError(500, `Error adding expense${error}`);
+    console.log(error);
+    throw new ApiError(500, "Error adding expense");
   }
 });
 
@@ -42,7 +43,8 @@ const history = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, transactions, "Transactions history"));
   } catch (error) {
-    throw new ApiError(500, `Error fetching history: ${error}`);
+    console.log(error);
+    throw new ApiError(500, "Error fetching transactions history");
   }
 });
 
@@ -68,7 +70,8 @@ const filteredHistory = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, transactionHistory, "Transactions history"));
   } catch (error) {
-    throw new ApiError(500, `Error fetching history: ${error}`);
+    console.log(error);
+    throw new ApiError(500, "Error fetching transactions history");
   }
 });
 
@@ -83,7 +86,8 @@ const deleteTransaction = asyncHandler(async (req, res) => {
         new ApiResponse(200, transaction, "Transaction deleted successfully")
       );
   } catch (error) {
-    throw new ApiError(500, `Error deleting transaction: ${error}`);
+    console.log(error);
+    throw new ApiError(500, "Error deleting transaction");
   }
 });
 
@@ -104,7 +108,8 @@ const updateTransaction = asyncHandler(async (req, res) => {
         new ApiResponse(200, transaction, "Transaction updated successfully")
       );
   } catch (error) {
-    throw new ApiError(500, `Error updating transaction: ${error}`);
+    console.log(error);
+    throw new ApiError(500, "Error updating transaction");
   }
 });
 

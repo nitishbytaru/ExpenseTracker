@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import { User } from "../models/user.mondel.js  ";
+import { User } from "../models/user.model.js  ";
 import { Transaction } from "../models/transaction.model.js";
 import { uploadToClounary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -32,16 +32,12 @@ const registerUser = asyncHandler(async (req, res) => {
       throw new ApiError(400, "Avatar file is required");
     }
 
-    const user = await User.create({
+    const createdUser = await User.create({
       username: username.toLowerCase(),
       email,
       password,
       avatar: avatar.url,
     });
-
-    const createdUser = User.findById(user._id).select(
-      "-password -refreshToken"
-    );
 
     if (!createdUser) {
       throw new ApiError(500, "Something went wrong while registering User");
@@ -51,7 +47,8 @@ const registerUser = asyncHandler(async (req, res) => {
       .status(201)
       .json(new ApiResponse(200, createdUser, "User created successfully"));
   } catch (error) {
-    throw new ApiError(500, `Error registering user: ${error}`);
+    console.log(error);
+    throw new ApiError(500, "Error registering user");
   }
 });
 
@@ -76,7 +73,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
     return res.status(200).json(new ApiResponse(200, true, "Login Successful"));
   } catch (error) {
-    throw new ApiError(500, `Error logging in user: ${error}`);
+    console.log(error);
+    throw new ApiError(500, `Error logging in user`);
   }
 });
 
@@ -99,7 +97,8 @@ const profile = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, req.session.user, "Data sent Successfully"));
   } catch (error) {
-    throw new ApiError(500, `Error fetching data: ${error}`);
+    console.log(error);
+    throw new ApiError(500, "Error fetching user profile");
   }
 });
 
@@ -125,7 +124,8 @@ const updateProfileData = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, true, "Profile Updated Successfully"));
   } catch (error) {
-    throw new ApiError(500, `Error fetching data: ${error}`);
+    console.log(error);
+    throw new ApiError(500, "Error updating user profile");
   }
 });
 
@@ -144,7 +144,8 @@ const deleteAccount = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, true, "User delted successfully"));
   } catch (error) {
-    throw new ApiError(500, `Error fetching data: ${error}`);
+    console.log(error);
+    throw new ApiError(500, "Error deleting user profile");
   }
 });
 
