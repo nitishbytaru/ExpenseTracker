@@ -6,8 +6,10 @@ import {
   profile,
   updateProfileData,
   deleteAccount,
+  refreshAccessToken,
 } from "../controllers/user.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
+import { verifyJWT } from "../middleware/auth.middlerware.js";
 
 const router = Router();
 
@@ -24,7 +26,9 @@ router.route("/register").post(
 
 router.route("/login").post(loginUser);
 
-router.route("/logout").post(logoutUser);
+//secured route
+router.route("/logout").post(verifyJWT, logoutUser);
+router.route("/refresh-token").post(refreshAccessToken);
 
 router.route("/profile").post(profile);
 

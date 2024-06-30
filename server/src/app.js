@@ -24,7 +24,4 @@ import transactionRouter from "./routes/transaction.router.js";
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/transaction", transactionRouter);
 
-import sessionMiddleware from "./middleware/session.js";
-app.use(sessionMiddleware);
-
 export { app };
