@@ -8,11 +8,11 @@ const addExpense = asyncHandler(async (req, res) => {
   const { user, income, note, expense, transactionDate } = req.body;
 
   if (
-    [user, income, note, expense, transactionDate].some(
-      (field) => field?.trim() === ""
+    [user, income, note?.trim(), expense, transactionDate].some(
+      (field) => field === ""
     )
   ) {
-    throw new ApiError(400, "Fill all the fields");
+    throw new ApiError(400, " Please fill all fields");
   }
 
   try {
@@ -28,8 +28,7 @@ const addExpense = asyncHandler(async (req, res) => {
       .status(201)
       .json(new ApiResponse(201, transaction, "Expense added successfully"));
   } catch (error) {
-    console.log(error);
-    throw new ApiError(500, "Error adding expense");
+    throw new ApiError(500, error?.message || "Error adding expense");
   }
 });
 
@@ -37,14 +36,17 @@ const addExpense = asyncHandler(async (req, res) => {
 const history = asyncHandler(async (req, res) => {
   try {
     const transactions = await Transaction.find({
-      user: req.session.user._id,
+      user: req.user._id,
     });
+
     res
       .status(200)
-      .json(new ApiResponse(200, transactions, "Transactions history"));
+      .json(new ApiResponse(200, transactions, "Transactions history sent"));
   } catch (error) {
-    console.log(error);
-    throw new ApiError(500, "Error fetching transactions history");
+    throw new ApiError(
+      500,
+      error?.message || "Error fetching transactions history"
+    );
   }
 });
 
@@ -52,15 +54,13 @@ const history = asyncHandler(async (req, res) => {
 const filteredHistory = asyncHandler(async (req, res) => {
   const { historyStartDate, historyEndDate } = req.body;
 
-  if (
-    [historyStartDate, historyEndDate].some((field) => field?.trim() === "")
-  ) {
+  if ([historyStartDate, historyEndDate].some((field) => field === "")) {
     throw new ApiError(400, "Date fields are empty");
   }
 
   try {
     const transactionHistory = await Transaction.find({
-      user: req.session.user._id,
+      user: req.user._id,
       transactionDate: {
         $gt: historyStartDate,
         $lt: historyEndDate,
@@ -75,33 +75,23 @@ const filteredHistory = asyncHandler(async (req, res) => {
   }
 });
 
-//delete a transaction
-const deleteTransaction = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  try {
-    const transaction = await Transaction.findByIdAndDelete(id);
-    res
-      .send(200)
-      .json(
-        new ApiResponse(200, transaction, "Transaction deleted successfully")
-      );
-  } catch (error) {
-    console.log(error);
-    throw new ApiError(500, "Error deleting transaction");
-  }
-});
-
 //update a transaction
 const updateTransaction = asyncHandler(async (req, res) => {
   const { income, note, expense, transactionDate } = req.body;
   const { id } = req.params;
   try {
-    const transaction = await Transaction.findByIdAndUpdate(id, {
-      income,
-      note,
-      expense,
-      transactionDate,
-    });
+    const transaction = await Transaction.findByIdAndUpdate(
+      id,
+      {
+        income,
+        note,
+        expense,
+        transactionDate,
+      },
+      {
+        new: true,
+      }
+    );
     res
       .status(200)
       .json(
@@ -110,6 +100,22 @@ const updateTransaction = asyncHandler(async (req, res) => {
   } catch (error) {
     console.log(error);
     throw new ApiError(500, "Error updating transaction");
+  }
+});
+
+//delete a transaction
+const deleteTransaction = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  try {
+    const transaction = await Transaction.findByIdAndDelete(id);
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, transaction, "Transaction deleted successfully")
+      );
+  } catch (error) {
+    throw new ApiError(500, error?.message || "Error deleting transaction");
   }
 });
 

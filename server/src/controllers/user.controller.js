@@ -194,7 +194,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 //user profile
-const profile = asyncHandler(async (req, res) => {
+const getProfile = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
 
@@ -254,7 +254,7 @@ export {
   registerUser,
   loginUser,
   logoutUser,
-  profile,
+  getProfile,
   updateProfileData,
   deleteAccount,
   refreshAccessToken,
