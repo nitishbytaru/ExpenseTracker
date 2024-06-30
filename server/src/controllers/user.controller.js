@@ -128,7 +128,7 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ $or: [{ username }, { email }] });
+    const user = await User.findOne({ email });
 
     if (!user) {
       throw new ApiError(400, "User not found");
@@ -163,8 +163,7 @@ const loginUser = asyncHandler(async (req, res) => {
         )
       );
   } catch (error) {
-    console.log(error);
-    throw new ApiError(500, `Error logging in user`);
+    throw new ApiError(500, error?.message || "Error logging in user");
   }
 });
 
@@ -197,16 +196,15 @@ const logoutUser = asyncHandler(async (req, res) => {
 //user profile
 const profile = asyncHandler(async (req, res) => {
   try {
-    if (!req.session && !req.session.user) {
+    const user = await User.findById(req.user._id).select("-password");
+
+    if (!user) {
       throw new ApiError(401, "Not Logged in");
     }
 
-    res
-      .status(200)
-      .json(new ApiResponse(200, req.session.user, "Data sent Successfully"));
+    res.json(new ApiResponse(200, user, "User profile"));
   } catch (error) {
-    console.log(error);
-    throw new ApiError(500, "Error fetching user profile");
+    throw new ApiError(500, error?.message || "Error fetching user profile");
   }
 });
 
@@ -219,21 +217,23 @@ const updateProfileData = asyncHandler(async (req, res) => {
   }
 
   try {
-    await User.updateOne(
+    const user = await User.findByIdAndUpdate(
+      req.user?._id,
       {
-        _id: req.session.user._id,
+        $set: {
+          username,
+          email,
+          password,
+        },
       },
-      { $set: { username, email, password } }
+      { new: true }
     );
 
-    req.session.user = await User.findOne({ _id: req.session.user._id });
-
-    res
+    return res
       .status(200)
-      .json(new ApiResponse(200, true, "Profile Updated Successfully"));
+      .json(new ApiResponse(200, user, "Profile Updated Successfully"));
   } catch (error) {
-    console.log(error);
-    throw new ApiError(500, "Error updating user profile");
+    throw new ApiError(500, error?.message || "Error updating user profile");
   }
 });
 
@@ -241,19 +241,12 @@ const updateProfileData = asyncHandler(async (req, res) => {
 const deleteAccount = asyncHandler(async (req, res) => {
   try {
     await Transaction.deleteMany({
-      user: req.session.user._id,
+      user: req.user?._id,
     });
-
-    await User.deleteOne({
-      _id: req.session.user._id,
-    });
-
-    res
-      .status(200)
-      .json(new ApiResponse(200, true, "User delted successfully"));
+    await User.findByIdAndDelete(req.user?._id);
+    res.json(new ApiResponse(200, null, "Account Deleted Successfully"));
   } catch (error) {
-    console.log(error);
-    throw new ApiError(500, "Error deleting user profile");
+    throw new ApiError(500, error?.message || "Error deleting user profile");
   }
 });
 

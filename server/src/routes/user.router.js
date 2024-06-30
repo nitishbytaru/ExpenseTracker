@@ -30,10 +30,10 @@ router.route("/login").post(loginUser);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
 
-router.route("/profile").post(profile);
+router.route("/profile").post(verifyJWT, profile);
 
-router.route("/editProfile").post(updateProfileData);
+router.route("/editProfile").post(verifyJWT, updateProfileData);
 
-router.route("/delete").post(deleteAccount);
+router.route("/delete").post(verifyJWT, deleteAccount);
 
 export default router;
