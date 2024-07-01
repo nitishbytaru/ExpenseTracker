@@ -6,13 +6,13 @@ import {
   getProfile,
   logout,
   updateProfileData,
-} from "../../api/authApi";
+} from "../api/authApi.js";
 import {
   showErrorToast,
   showSuccessToast,
   showWarnToast,
-} from "../../utils/toastUtils";
-import LoginContext from "../../context/LoginContext";
+} from "../utils/toastUtils";
+import LoginContext from "../context/LoginContext";
 
 function EditProfile() {
   const { setProfile, setIsLoggedIn } = useContext(LoginContext);

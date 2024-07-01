@@ -1,16 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./Layout";
-import {
-  TransactionForm,
-  History,
-  NoPage,
-  Login,
-  Signup,
-  LandingPage,
-  EditProfile,
-  EditExpense,
-} from "./components/index";
+import { TransactionForm, History, Login, Register } from "./components/index";
+import EditExpense from "./pages/EditExpense.jsx";
+import EditProfile from "./pages/EditProfile.jsx";
+import LandingPage from "./pages/LandingPage.jsx";
+import NoPage from "./pages/NoPage.jsx";
 import LoginContextProvider from "./context/LoginContextProvider";
 import PrivateRoutes from "./utils/PrivateRoutes";
 
@@ -22,7 +17,7 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<LandingPage />} />
             <Route path="login" element={<Login />} />
-            <Route path="signup" element={<Signup />} />
+            <Route path="signup" element={<Register />} />
             <Route element={<PrivateRoutes />}>
               {/* Add your nested routes here */}
               <Route

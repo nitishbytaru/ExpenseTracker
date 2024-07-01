@@ -33,6 +33,7 @@ function History() {
         ...expense,
         transactionDate: new Date(expense.transactionDate).toLocaleDateString(),
       }));
+
       setExpenseHistory(
         formattedExpenseHistory.sort(
           (a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)

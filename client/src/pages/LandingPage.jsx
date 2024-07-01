@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import LoginContext from "../../context/LoginContext";
+import LoginContext from "../context/LoginContext";
 import {
   showSuccessToast,
   showWarnToast,
-} from "../../utils/toastUtils";
+} from "../utils/toastUtils";
 
 function LandingPage() {
   const navigate = useNavigate();
