@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { signup, login } from "../../api/authApi";
+import { register, login } from "../../api/authApi";
 import {
   showErrorToast,
   showSuccessToast,
@@ -8,7 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import LoginContext from "../../context/LoginContext";
 
-function Signup() {
+function Register() {
   const { setIsLoggedIn } = useContext(LoginContext);
   const navigate = useNavigate();
 
@@ -42,7 +42,7 @@ function Signup() {
     if (password !== Cpassword) return showWarnToast("Passwords do not match");
 
     try {
-      await signup({ username, email, password });
+      await register({ username, email, password });
       showSuccessToast("Registration successful");
       await login(userInput);
       setIsLoggedIn(true);
@@ -140,4 +140,4 @@ function Signup() {
   );
 }
 
-export default Signup;
+export default Register;

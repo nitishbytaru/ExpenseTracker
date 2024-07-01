@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 
-import LoginContext from "../../context/LoginContext";
+import LoginContext from "../context/LoginContext";
 import DatePicker from "react-datepicker";
-import { updateTransaction } from "../../api/expenseApi";
-import { showSuccessToast } from "../../utils/toastUtils";
+import { updateTransaction } from "../api/expenseApi";
+import { showSuccessToast } from "../utils/toastUtils";
 import { useNavigate } from "react-router-dom";
 
 function EditExpense() {
@@ -33,7 +33,7 @@ function EditExpense() {
     const { income, note, user, _id } = inputData;
 
     if (!profile && !income && !note && !user) console.log("error occurred");
-    
+
     try {
       await updateTransaction(_id, inputData);
       showSuccessToast("Transaction updated");

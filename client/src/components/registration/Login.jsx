@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { login } from "../../api/authApi";
 import LoginContext from "../../context/LoginContext";
-import { showErrorToast, showSuccessToast,showWarnToast } from "../../utils/toastUtils";
+import {
+  showErrorToast,
+  showSuccessToast,
+  showWarnToast,
+} from "../../utils/toastUtils";
 
 function Login() {
   const [userInput, setUserInput] = useState({

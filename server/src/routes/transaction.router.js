@@ -17,12 +17,18 @@ router.post("/expense", verifyJWT, addExpense);
 router.get("/history", verifyJWT, history);
 
 // Get filtered transaction history
-router.get("/history/filtered", verifyJWT, filteredHistory);
+router.post("/history/filtered", verifyJWT, filteredHistory);
+
+//Update and Delete transaction
+router
+  .route("/transaction/:id")
+  .put(verifyJWT, updateTransaction)
+  .delete(verifyJWT, deleteTransaction);
 
 // Update a transaction
-router.put("/updateTransaction/:id", verifyJWT, updateTransaction);
+// router.put("/updateTransaction/:id", verifyJWT, updateTransaction);
 
 // Delete a transaction
-router.delete("/deleteTransaction/:id", verifyJWT, deleteTransaction);
+// router.delete("/deleteTransaction/:id", verifyJWT, deleteTransaction);
 
 export default router;

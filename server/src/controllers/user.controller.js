@@ -114,8 +114,7 @@ const registerUser = asyncHandler(async (req, res) => {
       .status(201)
       .json(new ApiResponse(200, createdUser, "User created successfully"));
   } catch (error) {
-    console.log(error);
-    throw new ApiError(500, "Error registering user");
+    throw new ApiError(500, error?.message || "Error registering user");
   }
 });
 
@@ -196,7 +195,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 //user profile
 const getProfile = asyncHandler(async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("-password");
+    const user = await User.findById(req.user._id);
 
     if (!user) {
       throw new ApiError(401, "Not Logged in");
