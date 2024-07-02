@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getProfile } from "../../api/authApi";
 import LoginContext from "../../context/LoginContext";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { showErrorToast } from "../../utils/toastUtils";
 
 function TopNavBar({ toggleSideNav }) {
@@ -42,7 +41,13 @@ function TopNavBar({ toggleSideNav }) {
                 className="text-white p-2 rounded-lg hover:bg-green-600"
                 onClick={toggleSideNav}
               >
-                <AccountCircleOutlinedIcon />
+                <div className="w-full flex justify-center align-middle">
+                  <img
+                    className="w-11 h-11 object-cover rounded-full"
+                    src={`${profile.avatar}`}
+                    alt=""
+                  />
+                </div>
               </li>
             </>
           ) : (

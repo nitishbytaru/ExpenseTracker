@@ -6,7 +6,11 @@ const API_URL = "/api/v1/user";
 //api for register
 export const register = async (data) => {
   try {
-    await axios.post(`${API_URL}/register`, data);
+    await axios.post(`${API_URL}/register`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   } catch (error) {
     console.log(error);
   }
@@ -15,7 +19,8 @@ export const register = async (data) => {
 //api for login
 export const login = async (data) => {
   try {
-    await axios.post(`${API_URL}/login`, data);
+    const nitish = await axios.post(`${API_URL}/login`, data);
+    console.log(nitish);
     return true;
   } catch (error) {
     showErrorToast(error);
@@ -26,7 +31,8 @@ export const login = async (data) => {
 //api for logout
 export const logout = async () => {
   try {
-    await axios.post(`${API_URL}/logout`);
+    const response = await axios.post(`${API_URL}/logout`);
+    return response;
   } catch (error) {
     console.log(error);
   }

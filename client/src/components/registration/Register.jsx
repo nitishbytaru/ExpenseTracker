@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { register, login } from "../../api/authApi";
+import React, { useState } from "react";
+import { register } from "../../api/authApi";
 import {
   showErrorToast,
   showSuccessToast,
@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import LoginContext from "../../context/LoginContext";
 
 function Register() {
-  const { setIsLoggedIn } = useContext(LoginContext);
   const navigate = useNavigate();
 
   const [userInput, setUserInput] = useState({
@@ -18,6 +17,12 @@ function Register() {
     password: "",
     Cpassword: "",
   });
+
+  const [file, setFile] = useState();
+
+  function handleFileChange(event) {
+    setFile(event.target.files[0]);
+  }
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -41,11 +46,15 @@ function Register() {
 
     if (password !== Cpassword) return showWarnToast("Passwords do not match");
 
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("username", username);
+    formData.append("password", password);
+    formData.append("avatar", file);
+
     try {
-      await register({ username, email, password });
+      await register(formData);
       showSuccessToast("Registration successful");
-      await login(userInput);
-      setIsLoggedIn(true);
       navigate("../");
     } catch (error) {
       console.log(error);
@@ -125,6 +134,19 @@ function Register() {
                 value={userInput.Cpassword}
               />
             </div>
+          </div>
+          <div>
+            <label htmlFor="avatar" className="block text-sm font-medium">
+              Profile Image
+            </label>
+            <input
+              type="file"
+              name="avatar"
+              id="profileImage"
+              className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
+              required
+              onChange={handleFileChange}
+            />
           </div>
           <div>
             <button

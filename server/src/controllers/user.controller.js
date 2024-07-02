@@ -1,9 +1,12 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js  ";
 import { Transaction } from "../models/transaction.model.js";
-import { uploadToClounary } from "../utils/cloudinary.js";
+import {
+  uploadToCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { extractPublicId } from "cloudinary-build-url";
 import jwt from "jsonwebtoken";
 
 const generateAccessAndRefreshToken = async (userId) => {
@@ -18,10 +21,11 @@ const generateAccessAndRefreshToken = async (userId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(
-      500,
-      "something went wrong while generating access and refresh Token"
-    );
+    return res
+      .status(500)
+      .send(
+        " something went wrong while generating access and refresh Token           "
+      );
   }
 };
 
@@ -29,7 +33,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken = req.cookie.refreshToken || req.body.refreshToken;
 
   if (!incomingRefreshToken) {
-    throw new ApiError(400, "Unotherized request");
+    return res.status(400).send("Unotherized request");
   }
 
   try {
@@ -41,11 +45,11 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     const user = await User.findById(decodedToken?._id);
 
     if (!user) {
-      throw new ApiError(401, "Invalid Refresh Token");
+      return res.status(401).send("Invalid Refresh Token");
     }
 
     if (incomingRefreshToken !== user?.refreshToken) {
-      throw new ApiError(401, "Refresh Token Expired");
+      return res.status(401).send("Refresh Token Expried");
     }
 
     const options = {
@@ -68,7 +72,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         )
       );
   } catch (error) {
-    throw new ApiError(401, error?.message || "Invalid Refresh Token");
+    return res.status(401).send("Invalid Refresh Token");
   }
 });
 
@@ -77,26 +81,26 @@ const registerUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
   if ([email, username, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, " Please fill all fields");
+    return res.status(400).send("Please fill in all fields");
   }
 
   try {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      throw new ApiError(409, "User already exists with same email");
+      return res.status(400).send("User already exists");
     }
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
 
     if (!avatarLocalPath) {
-      throw new ApiError(400, "Avatar file is required");
+      return res.status(400).send("Please upload an avatar");
     }
 
-    const avatar = await uploadToClounary(avatarLocalPath);
+    const avatar = await uploadToCloudinary(avatarLocalPath);
 
     if (!avatar) {
-      throw new ApiError(400, "Avatar file is required");
+      return res.status(400).send("Avatar file is required");
     }
 
     const createdUser = await User.create({
@@ -107,14 +111,16 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     if (!createdUser) {
-      throw new ApiError(500, "Something went wrong while registering User");
+      return res
+        .status(500)
+        .send("Something went wrong while registering User");
     }
 
     return res
       .status(201)
       .json(new ApiResponse(200, createdUser, "User created successfully"));
   } catch (error) {
-    throw new ApiError(500, error?.message || "Error registering user");
+    return res.status(500).send("Something went wrong while registering User");
   }
 });
 
@@ -123,18 +129,18 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if ([email, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "Fill all the fields");
+    return res.status(400, "Fill all the fields");
   }
 
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
-      throw new ApiError(400, "User not found");
+      return res.status(400).send("User not found");
     }
 
     if (user.password !== password) {
-      throw new ApiError(401, "Invalid Password");
+      return res.status(406).send("Invalid Password");
     }
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -162,7 +168,7 @@ const loginUser = asyncHandler(async (req, res) => {
         )
       );
   } catch (error) {
-    throw new ApiError(500, error?.message || "Error logging in user");
+    return res.status(500).send("Something went wrong while logging in User");
   }
 });
 
@@ -198,12 +204,14 @@ const getProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (!user) {
-      throw new ApiError(401, "Not Logged in");
+      return res.status(401).send("Not Logged In");
     }
 
-    res.json(new ApiResponse(200, user, "User profile"));
+    return res.json(new ApiResponse(200, user, "User profile"));
   } catch (error) {
-    throw new ApiError(500, error?.message || "Error fetching user profile");
+    return res
+      .status(500)
+      .send("Something went wrong while getting user profile");
   }
 });
 
@@ -212,7 +220,7 @@ const updateProfileData = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
 
   if ([email, username, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, " Please fill all fields");
+    res.status(400).send("Please provide all the fields");
   }
 
   try {
@@ -232,20 +240,23 @@ const updateProfileData = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, user, "Profile Updated Successfully"));
   } catch (error) {
-    throw new ApiError(500, error?.message || "Error updating user profile");
+    res.status(500).send("Something went wrong while updating profile");
   }
 });
 
 //this route is used to delete the current user
 const deleteAccount = asyncHandler(async (req, res) => {
   try {
+    const publicId = extractPublicId(req.user.avatar);
+    await deleteFromCloudinary(publicId);
+
     await Transaction.deleteMany({
       user: req.user?._id,
     });
     await User.findByIdAndDelete(req.user?._id);
     res.json(new ApiResponse(200, null, "Account Deleted Successfully"));
   } catch (error) {
-    throw new ApiError(500, error?.message || "Error deleting user profile");
+    res.status(500).send("Something went wrong while deleting account");
   }
 });
 

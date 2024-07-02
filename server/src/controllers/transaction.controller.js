@@ -1,6 +1,5 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Transaction } from "../models/transaction.model.js";
-import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 //add expense
@@ -12,7 +11,7 @@ const addExpense = asyncHandler(async (req, res) => {
       (field) => field === ""
     )
   ) {
-    throw new ApiError(400, " Please fill all fields");
+    res.status(400, "Please fill all fields");
   }
 
   try {
@@ -26,9 +25,12 @@ const addExpense = asyncHandler(async (req, res) => {
 
     res
       .status(201)
-      .json(new ApiResponse(201, transaction, "Expense added successfully"));
+      .json(
+        new ApiResponse(201, transaction, "Transaction added successfully")
+      );
   } catch (error) {
-    throw new ApiError(500, error?.message || "Error adding expense");
+    console.log(error);
+    res.status(500).send("Error adding Transaction");
   }
 });
 
@@ -42,10 +44,7 @@ const history = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, transactions, "Transactions history sent"));
   } catch (error) {
-    throw new ApiError(
-      500,
-      error?.message || "Error fetching transactions history"
-    );
+    res.status(500).send("Error fetching transactions history");
   }
 });
 
@@ -54,7 +53,7 @@ const filteredHistory = asyncHandler(async (req, res) => {
   const { historyStartDate, historyEndDate } = req.body;
 
   if ([historyStartDate, historyEndDate].some((field) => field === "")) {
-    throw new ApiError(400, "Date fields are empty");
+    res.status(400).send("Please fill all fields");
   }
 
   try {
@@ -70,7 +69,7 @@ const filteredHistory = asyncHandler(async (req, res) => {
       .json(new ApiResponse(200, transactionHistory, "Transactions history"));
   } catch (error) {
     console.log(error);
-    throw new ApiError(500, "Error fetching transactions history");
+    res.status(500).send("Error fetching transactions history");
   }
 });
 
@@ -98,7 +97,7 @@ const updateTransaction = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     console.log(error);
-    throw new ApiError(500, "Error updating transaction");
+    res.status(500).send("Error updating transaction");
   }
 });
 
@@ -114,7 +113,7 @@ const deleteTransaction = asyncHandler(async (req, res) => {
         new ApiResponse(200, transaction, "Transaction deleted successfully")
       );
   } catch (error) {
-    throw new ApiError(500, error?.message || "Error deleting transaction");
+    res.status(500).send("Error deleting transaction");
   }
 });
 
