@@ -7,7 +7,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadToClounary = async (localFilePath) => {
+const uploadToCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) return null;
 
@@ -15,7 +15,7 @@ const uploadToClounary = async (localFilePath) => {
       resource_type: "auto",
     });
 
-    fs.unlinkSync(localFilePath); 
+    fs.unlinkSync(localFilePath);
     return response;
   } catch (error) {
     console.log(error);
@@ -26,4 +26,16 @@ const uploadToClounary = async (localFilePath) => {
   }
 };
 
-export { uploadToClounary };
+const deleteFromCloudinary = async (publicId) => {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    console.log("Deleted image result:", result);
+    return result;
+  } catch (error) {
+    console.error("Error deleting image from Cloudinary:", error);
+    throw error;
+  }
+};
+
+
+export { uploadToCloudinary, deleteFromCloudinary };

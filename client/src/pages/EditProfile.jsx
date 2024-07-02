@@ -7,11 +7,7 @@ import {
   logout,
   updateProfileData,
 } from "../api/authApi.js";
-import {
-  showErrorToast,
-  showSuccessToast,
-  showWarnToast,
-} from "../utils/toastUtils";
+import { showSuccessToast, showWarnToast } from "../utils/toastUtils";
 import LoginContext from "../context/LoginContext";
 
 function EditProfile() {
@@ -23,6 +19,7 @@ function EditProfile() {
     username: "",
     email: "",
     password: "",
+    avatar: "",
   });
 
   useEffect(() => {
@@ -84,6 +81,13 @@ function EditProfile() {
   return (
     <div className="min-h-full flex items-center justify-center bg-gray-900 text-white">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div className="w-full flex justify-center mb-6">
+          <img
+            className="rounded-full w-32 h-32 object-cover"
+            src={`${userData.avatar}`}
+            alt="User Avatar"
+          />
+        </div>
         <h1 className="text-3xl font-bold mb-6 text-center">Edit Profile</h1>
         <form className="space-y-6" onSubmit={submitForm}>
           <div>

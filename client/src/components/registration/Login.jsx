@@ -8,25 +8,16 @@ import {
   showSuccessToast,
   showWarnToast,
 } from "../../utils/toastUtils";
+import { isValidEmail } from "../../utils/formValidation";
+import { handleChange } from "../../utils/formHandleChanges";
 
 function Login() {
+  const navigate = useNavigate();
+  const { setIsLoggedIn, setProfile } = useContext(LoginContext);
   const [userInput, setUserInput] = useState({
     email: "",
     password: "",
   });
-
-  const { setIsLoggedIn, setProfile } = useContext(LoginContext);
-  const navigate = useNavigate();
-
-  function handleChange(event) {
-    const { name, value } = event.target;
-    setUserInput({ ...userInput, [name]: value });
-  }
-
-  function isValidEmail(email) {
-    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    return emailRegex.test(email);
-  }
 
   const submitForm = async (e) => {
     e.preventDefault();
@@ -73,7 +64,9 @@ function Login() {
               className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
               placeholder="name@company.com"
               required
-              onChange={handleChange}
+              onChange={(event) => {
+                handleChange(event, setUserInput);
+              }}
               value={userInput.email}
             />
           </div>
@@ -88,7 +81,9 @@ function Login() {
               className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
               placeholder="••••••••"
               required
-              onChange={handleChange}
+              onChange={(event) => {
+                handleChange(event, setUserInput);
+              }}
               value={userInput.password}
             />
           </div>

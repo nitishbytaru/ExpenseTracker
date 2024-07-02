@@ -1,33 +1,24 @@
-import React, { useState, useContext } from "react";
-import { register, login } from "../../api/authApi";
+import React, { useState } from "react";
 import {
   showErrorToast,
   showSuccessToast,
   showWarnToast,
 } from "../../utils/toastUtils";
 import { useNavigate } from "react-router-dom";
-import LoginContext from "../../context/LoginContext";
+import { register } from "../../api/authApi";
+import { isValidEmail } from "../../utils/formValidation";
+import { handleFileChange, handleChange } from "../../utils/formHandleChanges";
 
 function Register() {
-  const { setIsLoggedIn } = useContext(LoginContext);
   const navigate = useNavigate();
 
+  const [file, setFile] = useState();
   const [userInput, setUserInput] = useState({
     username: "",
     email: "",
     password: "",
     Cpassword: "",
   });
-
-  function handleChange(event) {
-    const { name, value } = event.target;
-    setUserInput({ ...userInput, [name]: value });
-  }
-
-  function isValidEmail(email) {
-    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    return emailRegex.test(email);
-  }
 
   const submitForm = async (e) => {
     e.preventDefault();
@@ -41,11 +32,15 @@ function Register() {
 
     if (password !== Cpassword) return showWarnToast("Passwords do not match");
 
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("username", username);
+    formData.append("password", password);
+    formData.append("avatar", file);
+
     try {
-      await register({ username, email, password });
+      await register(formData);
       showSuccessToast("Registration successful");
-      await login(userInput);
-      setIsLoggedIn(true);
       navigate("../");
     } catch (error) {
       console.log(error);
@@ -75,7 +70,9 @@ function Register() {
               className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
               placeholder="username24"
               required
-              onChange={handleChange}
+              onChange={(event) => {
+                handleChange(event, setUserInput);
+              }}
               value={userInput.username}
             />
           </div>
@@ -90,7 +87,9 @@ function Register() {
               className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
               placeholder="name@company.com"
               required
-              onChange={handleChange}
+              onChange={(event) => {
+                handleChange(event, setUserInput);
+              }}
               value={userInput.email}
             />
           </div>
@@ -106,7 +105,9 @@ function Register() {
                 className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
                 placeholder="••••••••"
                 required
-                onChange={handleChange}
+                onChange={(event) => {
+                  handleChange(event, setUserInput);
+                }}
                 value={userInput.password}
               />
             </div>
@@ -121,10 +122,27 @@ function Register() {
                 className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
                 placeholder="••••••••"
                 required
-                onChange={handleChange}
+                onChange={(event) => {
+                  handleChange(event, setUserInput);
+                }}
                 value={userInput.Cpassword}
               />
             </div>
+          </div>
+          <div>
+            <label htmlFor="avatar" className="block text-sm font-medium">
+              Profile Image
+            </label>
+            <input
+              type="file"
+              name="avatar"
+              id="profileImage"
+              className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
+              required
+              onChange={(event) => {
+                handleFileChange(event, setFile);
+              }}
+            />
           </div>
           <div>
             <button

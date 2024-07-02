@@ -15,19 +15,22 @@ import LoginContext from "../../context/LoginContext";
 import { useNavigate } from "react-router-dom";
 
 function History() {
-  const [expenseHistory, setExpenseHistory] = useState([]);
-  const [historyStartDate, setHistoryStartDate] = useState(new Date());
-  const [historyEndDate, setHistoryEndDate] = useState(new Date());
-  const [loading, setLoading] = useState(false);
-
   const { setInputData } = useContext(LoginContext);
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+
+  const [expenseHistory, setExpenseHistory] = useState([]);
+  const [inputDate, setInputDate] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+  });
 
   async function fetchExpenses(isFiltered = false) {
     setLoading(true);
     try {
       const { data } = isFiltered
-        ? await getFilteredHistory({ historyStartDate, historyEndDate })
+        ? await getFilteredHistory({ inputDate })
         : await getHistory();
       const formattedExpenseHistory = data.map((expense) => ({
         ...expense,
@@ -84,8 +87,10 @@ function History() {
               <span className="text-white text-lg">From:</span>
               <DatePicker
                 className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-36 p-2.5 bg-gray-700 text-white"
-                selected={historyStartDate}
-                onChange={(date) => setHistoryStartDate(date)}
+                selected={inputDate.startDate}
+                onChange={(date) =>
+                  setInputDate({ ...inputDate, startDate: date })
+                }
               />
             </label>
           </div>
@@ -94,8 +99,10 @@ function History() {
               <span className="text-white text-lg">To:</span>
               <DatePicker
                 className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-36 p-2.5 bg-gray-700 text-white"
-                selected={historyEndDate}
-                onChange={(date) => setHistoryEndDate(date)}
+                selected={inputDate.endDate}
+                onChange={(date) =>
+                  setInputDate({ ...inputDate, endDate: date })
+                }
               />
             </label>
           </div>

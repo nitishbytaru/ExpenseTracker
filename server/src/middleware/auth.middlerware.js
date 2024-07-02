@@ -1,4 +1,3 @@
-import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
@@ -10,7 +9,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
       req.header("Authorization")?.replce("Bearer ", "");
 
     if (!token) {
-      throw new ApiError(401, "You are not authorized");
+      return res.status(401).send("Not authorized");
     }
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
@@ -20,13 +19,13 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     );
 
     if (!user) {
-      throw new ApiError(401, "You are not authorized");
+      return res.status(401).send("Not authorized");
     }
 
     req.user = user;
 
     next();
   } catch (error) {
-    throw new ApiError(401, error?.message || "Invalid accessToken");
+    return res.status(401).send("Invalid accessToken");
   }
 });
