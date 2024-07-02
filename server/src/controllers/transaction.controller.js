@@ -50,9 +50,9 @@ const history = asyncHandler(async (req, res) => {
 
 //transaction history with filter
 const filteredHistory = asyncHandler(async (req, res) => {
-  const { historyStartDate, historyEndDate } = req.body;
+  const { startDate, endDate } = req.body;
 
-  if ([historyStartDate, historyEndDate].some((field) => field === "")) {
+  if ([startDate, endDate].some((field) => field === "")) {
     res.status(400).send("Please fill all fields");
   }
 
@@ -60,8 +60,8 @@ const filteredHistory = asyncHandler(async (req, res) => {
     const transactionHistory = await Transaction.find({
       user: req.user._id,
       transactionDate: {
-        $gt: historyStartDate,
-        $lt: historyEndDate,
+        $gt: startDate,
+        $lt: endDate,
       },
     });
     res

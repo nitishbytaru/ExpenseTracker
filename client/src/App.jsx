@@ -19,7 +19,6 @@ function App() {
             <Route path="login" element={<Login />} />
             <Route path="signup" element={<Register />} />
             <Route element={<PrivateRoutes />}>
-              {/* Add your nested routes here */}
               <Route
                 path="transactionform"
                 element={<TransactionForm />}

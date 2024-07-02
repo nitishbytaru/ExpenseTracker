@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { showSuccessToast, showWarnToast } from "../../utils/toastUtils";
 import { addExpense } from "../../api/expenseApi";
+import { handleChange, handleDateChange } from "../../utils/formHandleChanges";
 
 function TransactionForm() {
   const { profile, startDate, setStartDate, inputData, setInputData } =
@@ -18,33 +19,29 @@ function TransactionForm() {
     }
   }, [profile]);
 
-  const handleDateChange = (date) => {
-    setStartDate(date);
-    setInputData((prevInputData) => ({
-      ...prevInputData,
-      transactionDate: date,
-    }));
-  };
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setInputData((prevInputData) => ({
-      ...prevInputData,
-      [name]: value,
-    }));
-  };
+  // const handleDateChange = (date) => {
+  //   setStartDate(date);
+  //   setInputData((prevInputData) => ({
+  //     ...prevInputData,
+  //     transactionDate: date,
+  //   }));
+  // };
 
   const submitForm = async (event) => {
-    const { income, note, user } = inputData;
     event.preventDefault();
+
+    const { income, note, user } = inputData;
+
     if (!profile && !income && !note && !user)
       return showWarnToast("Input Fields are missing");
+
     try {
       await addExpense(inputData);
       showSuccessToast("Transaction Added");
     } catch (error) {
       console.log(error);
     }
+
     setInputData({
       user: profile._id,
       income: "",
@@ -77,7 +74,9 @@ function TransactionForm() {
               name="income"
               value={inputData.income}
               className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-              onChange={handleChange}
+              onChange={(event) => {
+                handleChange(event, setUserInput);
+              }}
               placeholder="999"
               required
             />
@@ -95,7 +94,9 @@ function TransactionForm() {
               id="note"
               name="note"
               value={inputData.note}
-              onChange={handleChange}
+              onChange={(event) => {
+                handleChange(event, setUserInput);
+              }}
               className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               placeholder="salary"
               required
@@ -115,7 +116,9 @@ function TransactionForm() {
               name="expense"
               value={inputData.expense}
               className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-              onChange={handleChange}
+              onChange={(event) => {
+                handleChange(event, setUserInput);
+              }}
               placeholder="999"
               required
             />
@@ -132,7 +135,9 @@ function TransactionForm() {
               <DatePicker
                 className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
                 selected={startDate}
-                onChange={handleDateChange}
+                onChange={(date) => {
+                  handleDateChange(date, setStartDate, setInputData);
+                }}
               />
             </div>
           </div>
