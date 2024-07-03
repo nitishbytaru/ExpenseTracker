@@ -1,10 +1,13 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import LoginContext from "../../context/LoginContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { showSuccessToast, showWarnToast } from "../../utils/toastUtils";
 import { addExpense } from "../../api/expenseApi";
-import { handleChange, handleDateChange } from "../../utils/formHandleChanges";
+import {
+  handleTransactionChange,
+  handleDateChange,
+} from "../../utils/formHandleChanges";
 
 function TransactionForm() {
   const { profile, startDate, setStartDate, inputData, setInputData } =
@@ -12,28 +15,24 @@ function TransactionForm() {
 
   useEffect(() => {
     if (profile) {
-      setInputData((prevInputData) => ({
-        ...prevInputData,
+      setInputData({
         user: profile._id,
-      }));
+        income: "",
+        note: "",
+        expense: "",
+        transactionDate: startDate,
+      });
     }
   }, [profile]);
-
-  // const handleDateChange = (date) => {
-  //   setStartDate(date);
-  //   setInputData((prevInputData) => ({
-  //     ...prevInputData,
-  //     transactionDate: date,
-  //   }));
-  // };
 
   const submitForm = async (event) => {
     event.preventDefault();
 
     const { income, note, user } = inputData;
 
-    if (!profile && !income && !note && !user)
+    if (!income && !note && !user && !profile) {
       return showWarnToast("Input Fields are missing");
+    }
 
     try {
       await addExpense(inputData);
@@ -75,7 +74,7 @@ function TransactionForm() {
               value={inputData.income}
               className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               onChange={(event) => {
-                handleChange(event, setUserInput);
+                handleTransactionChange(event, setInputData);
               }}
               placeholder="999"
               required
@@ -95,7 +94,7 @@ function TransactionForm() {
               name="note"
               value={inputData.note}
               onChange={(event) => {
-                handleChange(event, setUserInput);
+                handleTransactionChange(event, setInputData);
               }}
               className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               placeholder="salary"
@@ -117,7 +116,7 @@ function TransactionForm() {
               value={inputData.expense}
               className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               onChange={(event) => {
-                handleChange(event, setUserInput);
+                handleTransactionChange(event, setInputData);
               }}
               placeholder="999"
               required

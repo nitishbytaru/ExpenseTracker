@@ -62,7 +62,7 @@ function History() {
           try {
             await deleteTransaction(id);
             fetchExpenses();
-            showSuccessToast("Expense deleted successfully");
+            showSuccessToast("Transaction deleted");
           } catch (error) {
             console.error("Error deleting transaction:", error);
             toast.error("Error deleting transaction");

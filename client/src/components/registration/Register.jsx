@@ -7,7 +7,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { register } from "../../api/authApi";
 import { isValidEmail } from "../../utils/formValidation";
-import { handleFileChange, handleChange } from "../../utils/formHandleChanges";
+import { handleFileChange, handleUserChange } from "../../utils/formHandleChanges";
 
 function Register() {
   const navigate = useNavigate();
@@ -71,7 +71,7 @@ function Register() {
               placeholder="username24"
               required
               onChange={(event) => {
-                handleChange(event, setUserInput);
+                handleUserChange(event, userInput, setUserInput);
               }}
               value={userInput.username}
             />
@@ -88,7 +88,7 @@ function Register() {
               placeholder="name@company.com"
               required
               onChange={(event) => {
-                handleChange(event, setUserInput);
+                handleUserChange(event, userInput, setUserInput);
               }}
               value={userInput.email}
             />
@@ -106,7 +106,7 @@ function Register() {
                 placeholder="••••••••"
                 required
                 onChange={(event) => {
-                  handleChange(event, setUserInput);
+                  handleUserChange(event, userInput, setUserInput);
                 }}
                 value={userInput.password}
               />
@@ -123,7 +123,7 @@ function Register() {
                 placeholder="••••••••"
                 required
                 onChange={(event) => {
-                  handleChange(event, setUserInput);
+                  handleUserChange(event, userInput, setUserInput);
                 }}
                 value={userInput.Cpassword}
               />

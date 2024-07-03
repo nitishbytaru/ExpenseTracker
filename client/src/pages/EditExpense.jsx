@@ -1,38 +1,27 @@
 import React, { useContext } from "react";
-
 import LoginContext from "../context/LoginContext";
 import DatePicker from "react-datepicker";
 import { updateTransaction } from "../api/expenseApi";
 import { showSuccessToast } from "../utils/toastUtils";
 import { useNavigate } from "react-router-dom";
+import {
+  handleDateChange,
+  handleTransactionChange,
+} from "../utils/formHandleChanges";
 
 function EditExpense() {
-  const { profile, startDate, setStartDate, inputData, setInputData } =
-    useContext(LoginContext);
-
   const navigate = useNavigate();
 
-  const handleDateChange = (date) => {
-    setStartDate(date);
-    setInputData((prevInputData) => ({
-      ...prevInputData,
-      transactionDate: date,
-    }));
-  };
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setInputData((prevInputData) => ({
-      ...prevInputData,
-      [name]: value,
-    }));
-  };
+  const { profile, setStartDate, inputData, setInputData } =
+    useContext(LoginContext);
 
   const submitForm = async (event) => {
     event.preventDefault();
     const { income, note, user, _id } = inputData;
 
-    if (!profile && !income && !note && !user) console.log("error occurred");
+    if (!profile && !income && !note && !user) {
+      return showWarnToast("Input Fields are missing");
+    }
 
     try {
       await updateTransaction(_id, inputData);
@@ -62,7 +51,9 @@ function EditExpense() {
               name="income"
               value={inputData.income}
               className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-              onChange={handleChange}
+              onChange={(event) => {
+                handleTransactionChange(event, setInputData);
+              }}
               placeholder="999"
               required
             />
@@ -80,7 +71,9 @@ function EditExpense() {
               id="note"
               name="note"
               value={inputData.note}
-              onChange={handleChange}
+              onChange={(event) => {
+                handleTransactionChange(event, setInputData);
+              }}
               className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               placeholder="salary"
               required
@@ -100,7 +93,9 @@ function EditExpense() {
               name="expense"
               value={inputData.expense}
               className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-              onChange={handleChange}
+              onChange={(event) => {
+                handleTransactionChange(event, setInputData);
+              }}
               placeholder="999"
               required
             />
@@ -117,7 +112,9 @@ function EditExpense() {
               <DatePicker
                 className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
                 selected={inputData.transactionDate}
-                onChange={handleDateChange}
+                onChange={(date) => {
+                  handleDateChange(date, setStartDate, setInputData);
+                }}
               />
             </div>
           </div>

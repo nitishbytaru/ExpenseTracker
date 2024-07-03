@@ -17,7 +17,7 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<LandingPage />} />
             <Route path="login" element={<Login />} />
-            <Route path="signup" element={<Register />} />
+            <Route path="register" element={<Register />} />
             <Route element={<PrivateRoutes />}>
               <Route
                 path="transactionform"
