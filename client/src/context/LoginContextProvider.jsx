@@ -5,11 +5,12 @@ const LoginContextProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profile, setProfile] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
+  const [transactionHistory, setTransactionHistory] = useState([]);
   const [inputData, setInputData] = useState({
     user: "",
-    income: "",
     note: "",
-    expense: "",
+    transactionType: "expense",
+    transactionValue: 0,
     transactionDate: startDate,
   });
 
@@ -33,6 +34,8 @@ const LoginContextProvider = ({ children }) => {
         setStartDate,
         inputData,
         setInputData,
+        transactionHistory,
+        setTransactionHistory,
       }}
     >
       {children}

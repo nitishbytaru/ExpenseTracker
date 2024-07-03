@@ -3,7 +3,7 @@ import LoginContext from "../../context/LoginContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { showSuccessToast, showWarnToast } from "../../utils/toastUtils";
-import { addExpense } from "../../api/expenseApi";
+import { addTransaction } from "../../api/transactionApi.js";
 import {
   handleTransactionChange,
   handleDateChange,
@@ -17,9 +17,9 @@ function TransactionForm() {
     if (profile) {
       setInputData({
         user: profile._id,
-        income: "",
         note: "",
-        expense: "",
+        transactionType: "expense",
+        transactionValue: "",
         transactionDate: startDate,
       });
     }
@@ -28,14 +28,14 @@ function TransactionForm() {
   const submitForm = async (event) => {
     event.preventDefault();
 
-    const { income, note, user } = inputData;
+    const { transactionType, note, user, transactionValue } = inputData;
 
-    if (!income && !note && !user && !profile) {
+    if (!transactionType && !note && !user && !profile && !transactionValue) {
       return showWarnToast("Input Fields are missing");
     }
 
     try {
-      await addExpense(inputData);
+      await addTransaction(inputData);
       showSuccessToast("Transaction Added");
     } catch (error) {
       console.log(error);
@@ -43,9 +43,9 @@ function TransactionForm() {
 
     setInputData({
       user: profile._id,
-      income: "",
       note: "",
-      expense: "",
+      transactionType: "expense",
+      transactionValue: "",
       transactionDate: startDate,
     });
   };
@@ -55,36 +55,17 @@ function TransactionForm() {
   }
 
   return (
-    <div className="min-h-full flex items-center justify-center bg-gray-900 text-white">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-3xl">
-        <h1 className="text-2xl font-bold mb-6">Expense Tracker</h1>
+    <div className="min-h-full flex items-center justify-center bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white">
+      <div className="bg-gray-800 p-10 rounded-lg shadow-xl w-full max-w-3xl">
+        <h1 className="text-3xl font-bold mb-8 text-center">
+          Add New Transaction
+        </h1>
 
         <form className="grid grid-cols-2 gap-6" onSubmit={submitForm}>
           <div className="col-span-2 md:col-span-1">
             <label
-              htmlFor="income"
-              className="block mb-2 text-xl font-medium text-white"
-            >
-              Income:
-            </label>
-            <input
-              type="number"
-              id="income"
-              name="income"
-              value={inputData.income}
-              className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-              onChange={(event) => {
-                handleTransactionChange(event, setInputData);
-              }}
-              placeholder="999"
-              required
-            />
-          </div>
-
-          <div className="col-span-2 md:col-span-1">
-            <label
               htmlFor="note"
-              className="block mb-2 text-xl font-medium text-white"
+              className="block mb-2 text-lg font-medium text-white"
             >
               Note:
             </label>
@@ -96,25 +77,25 @@ function TransactionForm() {
               onChange={(event) => {
                 handleTransactionChange(event, setInputData);
               }}
-              className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-              placeholder="salary"
+              className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
+              placeholder="Salary"
               required
             />
           </div>
 
           <div className="col-span-2 md:col-span-1">
             <label
-              htmlFor="expense"
-              className="block mb-2 text-xl font-medium text-white"
+              htmlFor="transactionValue"
+              className="block mb-2 text-lg font-medium text-white"
             >
-              Expense:
+              Transaction Value:
             </label>
             <input
               type="number"
-              id="expense"
-              name="expense"
-              value={inputData.expense}
-              className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
+              id="transactionValue"
+              name="transactionValue"
+              value={inputData.transactionValue}
+              className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               onChange={(event) => {
                 handleTransactionChange(event, setInputData);
               }}
@@ -125,26 +106,48 @@ function TransactionForm() {
 
           <div className="col-span-2 md:col-span-1">
             <label
-              htmlFor="transactionDate"
-              className="block mb-2 text-xl font-medium text-white"
+              htmlFor="transactionType"
+              className="block mb-2 text-lg font-medium text-white"
             >
-              Select a date:
+              Transaction Type:
             </label>
-            <div id="transactionDate" name="transactionDate">
-              <DatePicker
-                className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-                selected={startDate}
-                onChange={(date) => {
-                  handleDateChange(date, setStartDate, setInputData);
-                }}
-              />
-            </div>
+            <select
+              className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
+              name="transactionType"
+              id="transactionType"
+              value={inputData.transactionType}
+              onChange={(event) => {
+                handleTransactionChange(event, setInputData);
+              }}
+              required
+            >
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </select>
+          </div>
+
+          <div className="col-span-2 md:col-span-1">
+            <label
+              htmlFor="transactionDate"
+              className="block mb-2 text-lg font-medium text-white"
+            >
+              Select a Date:
+            </label>
+            <DatePicker
+              className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
+              selected={startDate}
+              onChange={(date) => {
+                handleDateChange(date, setStartDate, setInputData);
+              }}
+              dateFormat="dd/MM/yyyy"
+              required
+            />
           </div>
 
           <div className="col-span-2 text-center">
             <button
               type="submit"
-              className="w-1/3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+              className="w-1/3 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 transition duration-300 transform hover:scale-105"
             >
               Submit
             </button>

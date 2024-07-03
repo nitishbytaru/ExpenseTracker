@@ -8,15 +8,16 @@ const transactionSchema = new Schema(
       ref: "User",
       required: true,
     },
-    income: {
-      type: Number,
-      required: true,
-    },
     note: {
       type: String,
       required: true,
     },
-    expense: {
+    transactionType: {
+      type: String,
+      enum: ["expense", "income"],
+      required: true,
+    },
+    transactionValue: {
       type: Number,
       required: true,
     },

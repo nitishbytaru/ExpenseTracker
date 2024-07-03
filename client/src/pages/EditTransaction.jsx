@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import LoginContext from "../context/LoginContext";
 import DatePicker from "react-datepicker";
-import { updateTransaction } from "../api/expenseApi";
+import { updateTransaction } from "../api/transactionApi.js";
 import { showSuccessToast } from "../utils/toastUtils";
 import { useNavigate } from "react-router-dom";
 import {
@@ -9,7 +9,7 @@ import {
   handleTransactionChange,
 } from "../utils/formHandleChanges";
 
-function EditExpense() {
+function EditTransaction() {
   const navigate = useNavigate();
 
   const { profile, setStartDate, inputData, setInputData } =
@@ -17,9 +17,23 @@ function EditExpense() {
 
   const submitForm = async (event) => {
     event.preventDefault();
-    const { income, note, user, _id } = inputData;
+    const {
+      user,
+      _id,
+      note,
+      transactionDate,
+      transactionType,
+      transactionvalue,
+    } = inputData;
 
-    if (!profile && !income && !note && !user) {
+    if (
+      !profile &&
+      !note &&
+      !user &&
+      !transactionDate &&
+      !transactionType &&
+      !transactionvalue
+    ) {
       return showWarnToast("Input Fields are missing");
     }
 
@@ -40,29 +54,8 @@ function EditExpense() {
         <form className="grid grid-cols-2 gap-6" onSubmit={submitForm}>
           <div className="col-span-2 md:col-span-1">
             <label
-              htmlFor="income"
-              className="block mb-2 text-xl font-medium text-white"
-            >
-              Income:
-            </label>
-            <input
-              type="number"
-              id="income"
-              name="income"
-              value={inputData.income}
-              className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-              onChange={(event) => {
-                handleTransactionChange(event, setInputData);
-              }}
-              placeholder="999"
-              required
-            />
-          </div>
-
-          <div className="col-span-2 md:col-span-1">
-            <label
               htmlFor="note"
-              className="block mb-2 text-xl font-medium text-white"
+              className="block mb-2 text-lg font-medium text-white"
             >
               Note:
             </label>
@@ -74,25 +67,25 @@ function EditExpense() {
               onChange={(event) => {
                 handleTransactionChange(event, setInputData);
               }}
-              className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-              placeholder="salary"
+              className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
+              placeholder="Salary"
               required
             />
           </div>
 
           <div className="col-span-2 md:col-span-1">
             <label
-              htmlFor="expense"
-              className="block mb-2 text-xl font-medium text-white"
+              htmlFor="transactionValue"
+              className="block mb-2 text-lg font-medium text-white"
             >
-              Expense:
+              Transaction Value:
             </label>
             <input
               type="number"
-              id="expense"
-              name="expense"
-              value={inputData.expense}
-              className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
+              id="transactionValue"
+              name="transactionValue"
+              className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
+              value={inputData.transactionValue}
               onChange={(event) => {
                 handleTransactionChange(event, setInputData);
               }}
@@ -103,20 +96,42 @@ function EditExpense() {
 
           <div className="col-span-2 md:col-span-1">
             <label
-              htmlFor="transactionDate"
-              className="block mb-2 text-xl font-medium text-white"
+              htmlFor="transactionType"
+              className="block mb-2 text-lg font-medium text-white"
             >
-              Select a date:
+              Transaction Type:
             </label>
-            <div id="transactionDate" name="transactionDate">
-              <DatePicker
-                className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-                selected={inputData.transactionDate}
-                onChange={(date) => {
-                  handleDateChange(date, setStartDate, setInputData);
-                }}
-              />
-            </div>
+            <select
+              className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
+              name="transactionType"
+              id="transactionType"
+              value={inputData.transactionType}
+              onChange={(event) => {
+                handleTransactionChange(event, setInputData);
+              }}
+              required
+            >
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </select>
+          </div>
+
+          <div className="col-span-2 md:col-span-1">
+            <label
+              htmlFor="transactionDate"
+              className="block mb-2 text-lg font-medium text-white"
+            >
+              Select a Date:
+            </label>
+            <DatePicker
+              className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
+              selected={inputData.transactionDate}
+              onChange={(date) => {
+                handleDateChange(date, setStartDate, setInputData);
+              }}
+              dateFormat="dd/MM/yyyy"
+              required
+            />
           </div>
 
           <div className="col-span-2 text-center">
@@ -133,4 +148,4 @@ function EditExpense() {
   );
 }
 
-export default EditExpense;
+export default EditTransaction;

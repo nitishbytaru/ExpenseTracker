@@ -3,13 +3,18 @@ import { Transaction } from "../models/transaction.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 //add expense
-const addExpense = asyncHandler(async (req, res) => {
-  const { user, income, note, expense, transactionDate } = req.body;
+const addTransaction = asyncHandler(async (req, res) => {
+  const { user, note, transactionType, transactionValue, transactionDate } =
+    req.body;
 
   if (
-    [user, income, note?.trim(), expense, transactionDate].some(
-      (field) => field === ""
-    )
+    [
+      user,
+      note?.trim(),
+      transactionDate,
+      transactionType,
+      transactionValue,
+    ].some((field) => field === "")
   ) {
     res.status(400, "Please fill all fields");
   }
@@ -17,11 +22,13 @@ const addExpense = asyncHandler(async (req, res) => {
   try {
     const transaction = await Transaction.create({
       user,
-      income,
       note,
-      expense,
+      transactionType,
+      transactionValue: parseInt(transactionValue),
       transactionDate,
     });
+
+    console.log(transaction);
 
     res
       .status(201)
@@ -75,15 +82,15 @@ const filteredHistory = asyncHandler(async (req, res) => {
 
 //update a transaction
 const updateTransaction = asyncHandler(async (req, res) => {
-  const { income, note, expense, transactionDate } = req.body;
+  const { note, transactionType, transactionValue, transactionDate } = req.body;
   const { id } = req.params;
   try {
     const transaction = await Transaction.findByIdAndUpdate(
       id,
       {
-        income,
         note,
-        expense,
+        transactionType,
+        transactionValue,
         transactionDate,
       },
       {
@@ -118,7 +125,7 @@ const deleteTransaction = asyncHandler(async (req, res) => {
 });
 
 export {
-  addExpense,
+  addTransaction,
   history,
   filteredHistory,
   deleteTransaction,

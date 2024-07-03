@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./Layout";
 import { TransactionForm, History, Login, Register } from "./components/index";
-import EditExpense from "./pages/EditExpense.jsx";
+import EditTransaction from "./pages/EditTransaction.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import NoPage from "./pages/NoPage.jsx";
@@ -26,7 +26,7 @@ function App() {
               />
               <Route path="history" element={<History />} exact />
               <Route path="editProfile" element={<EditProfile />} exact />
-              <Route path="editExpense" element={<EditExpense />} exact />
+              <Route path="editTransaction" element={<EditTransaction />} exact />
             </Route>
           </Route>
           <Route path="*" element={<NoPage />} />
