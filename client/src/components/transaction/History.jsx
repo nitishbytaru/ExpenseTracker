@@ -1,59 +1,30 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
+import { fetchTransactions } from "../../utils/FetchUtils/fetchTransactions.js";
+import { useFetchTransaction } from "../../hooks/useFetchTransaction";
+import { deleteTransaction } from "../../api/transactionApi";
+import { showSuccessToast } from "../../utils/toastUtils";
+import { toast } from "sonner";
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import RefreshTwoToneIcon from "@mui/icons-material/RefreshTwoTone";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import {
-  getHistory,
-  deleteTransaction,
-  getFilteredHistory,
-} from "../../api/transactionApi";
-import { showSuccessToast } from "../../utils/toastUtils";
-import { toast } from "sonner";
+
 import LoginContext from "../../context/LoginContext";
 import { useNavigate } from "react-router-dom";
 
 function History() {
   const navigate = useNavigate();
-  const { setInputData } = useContext(LoginContext);
 
-  const [loading, setLoading] = useState(false);
-  const [transactionHistory, setTransactionHistory] = useState([]);
-  const [inputDate, setInputDate] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
-  });
+  const {
+    loading,
+    setInputTransactionData,
+    setLoading,
+    setTransactionHistory,
+  } = useContext(LoginContext);
 
-  async function fetchTransactions(isFiltered = false) {
-    setLoading(true);
-    try {
-      const { data } = isFiltered
-        ? await getFilteredHistory({ inputDate })
-        : await getHistory();
-      const formattedTransactionHistory = data.map((transaction) => ({
-        ...transaction,
-        transactionDate: new Date(
-          transaction.transactionDate
-        ).toLocaleDateString(),
-      }));
-
-      setTransactionHistory(
-        formattedTransactionHistory.sort(
-          (a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)
-        )
-      );
-    } catch (error) {
-      console.error("Error fetching transaction history:", error);
-      toast.error("Error fetching transaction history");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
+  const { transactionHistory, inputDate, setInputDate } = useFetchTransaction();
 
   function deleteTransactionCall(id) {
     toast.warning("Confirm to delete transaction", {
@@ -62,7 +33,7 @@ function History() {
         onClick: async () => {
           try {
             await deleteTransaction(id);
-            fetchTransactions();
+            fetchTransactions(setLoading, setTransactionHistory, inputDate);
             showSuccessToast("Transaction deleted");
           } catch (error) {
             console.error("Error deleting transaction:", error);
@@ -75,7 +46,7 @@ function History() {
 
   function editTransactionCall(id) {
     const Data = transactionHistory.find((obj) => obj._id === id);
-    setInputData(Data);
+    setInputTransactionData(Data);
     navigate("/editTransaction");
   }
 
@@ -109,7 +80,14 @@ function History() {
           </div>
           <button
             className="text-white p-2"
-            onClick={() => fetchTransactions(true)}
+            onClick={() =>
+              fetchTransactions(
+                setLoading,
+                setTransactionHistory,
+                inputDate,
+                true
+              )
+            }
             disabled={loading}
           >
             <RefreshTwoToneIcon fontSize="large" />

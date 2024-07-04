@@ -1,19 +1,23 @@
 import React, { useContext } from "react";
-import LoginContext from "../context/LoginContext";
+import LoginContext from "../../context/LoginContext.js";
 import DatePicker from "react-datepicker";
-import { updateTransaction } from "../api/transactionApi.js";
-import { showSuccessToast } from "../utils/toastUtils";
+import { updateTransaction } from "../../api/transactionApi.js";
+import { showSuccessToast } from "../../utils/toastUtils.js";
 import { useNavigate } from "react-router-dom";
 import {
   handleDateChange,
   handleTransactionChange,
-} from "../utils/formHandleChanges";
+} from "../../utils/formHandleChanges.js";
 
 function EditTransaction() {
   const navigate = useNavigate();
 
-  const { profile, setStartDate, inputData, setInputData } =
-    useContext(LoginContext);
+  const {
+    profile,
+    setStartDate,
+    inputTransactionData,
+    setInputTransactionData,
+  } = useContext(LoginContext);
 
   const submitForm = async (event) => {
     event.preventDefault();
@@ -24,7 +28,7 @@ function EditTransaction() {
       transactionDate,
       transactionType,
       transactionvalue,
-    } = inputData;
+    } = inputTransactionData;
 
     if (
       !profile &&
@@ -38,7 +42,7 @@ function EditTransaction() {
     }
 
     try {
-      await updateTransaction(_id, inputData);
+      await updateTransaction(_id, inputTransactionData);
       showSuccessToast("Transaction updated");
     } catch (error) {
       console.log(error);
@@ -63,9 +67,9 @@ function EditTransaction() {
               type="text"
               id="note"
               name="note"
-              value={inputData.note}
+              value={inputTransactionData.note}
               onChange={(event) => {
-                handleTransactionChange(event, setInputData);
+                handleTransactionChange(event, setInputTransactionData);
               }}
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               placeholder="Salary"
@@ -85,9 +89,9 @@ function EditTransaction() {
               id="transactionValue"
               name="transactionValue"
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-              value={inputData.transactionValue}
+              value={inputTransactionData.transactionValue}
               onChange={(event) => {
-                handleTransactionChange(event, setInputData);
+                handleTransactionChange(event, setInputTransactionData);
               }}
               placeholder="999"
               required
@@ -105,9 +109,9 @@ function EditTransaction() {
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               name="transactionType"
               id="transactionType"
-              value={inputData.transactionType}
+              value={inputTransactionData.transactionType}
               onChange={(event) => {
-                handleTransactionChange(event, setInputData);
+                handleTransactionChange(event, setInputTransactionData);
               }}
               required
             >
@@ -125,9 +129,9 @@ function EditTransaction() {
             </label>
             <DatePicker
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-              selected={inputData.transactionDate}
+              selected={inputTransactionData.transactionDate}
               onChange={(date) => {
-                handleDateChange(date, setStartDate, setInputData);
+                handleDateChange(date, setStartDate, setInputTransactionData);
               }}
               dateFormat="dd/MM/yyyy"
               required

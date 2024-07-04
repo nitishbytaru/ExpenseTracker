@@ -1,17 +1,13 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import LoginContext from "../context/LoginContext";
-import { toast } from "sonner";
 import { showSuccessToast, showWarnToast } from "../utils/toastUtils.js";
-import { getHistory, getFilteredHistory } from "../api/transactionApi.js";
+import { useFetchSeperateTransaction } from "../hooks/useFetchSeperateTransaction.js";
 
 function LandingPage() {
   const navigate = useNavigate();
-  const { profile, transactionHistory, setTransactionHistory } =
-    useContext(LoginContext);
-
-  const [totalExpense, setTotalExpense] = useState(0);
-  const [totalIncome, setTotalIncome] = useState(0);
+  const { profile } = useContext(LoginContext);
+  const { totalIncome, totalExpense } = useFetchSeperateTransaction();
 
   function clicked() {
     if (profile) {
@@ -22,46 +18,6 @@ function LandingPage() {
       showWarnToast("Login first to Start!");
     }
   }
-
-  async function fetchTransactions(isFiltered = false) {
-    try {
-      const { data } = isFiltered
-        ? await getFilteredHistory({ inputDate })
-        : await getHistory();
-      const formattedTransactionHistory = data.map((transaction) => ({
-        ...transaction,
-        transactionDate: new Date(
-          transaction.transactionDate
-        ).toLocaleDateString(),
-      }));
-
-      setTransactionHistory(
-        formattedTransactionHistory.sort(
-          (a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)
-        )
-      );
-    } catch (error) {
-      console.error("Error fetching transaction history:", error);
-      toast.error("Error fetching transaction history");
-    }
-  }
-
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  useEffect(() => {
-    const income = transactionHistory
-      .filter((transaction) => transaction.transactionType === "income")
-      .reduce((acc, curr) => acc + curr.transactionValue, 0);
-
-    const expense = transactionHistory
-      .filter((transaction) => transaction.transactionType === "expense")
-      .reduce((acc, curr) => acc + curr.transactionValue, 0);
-
-    setTotalIncome(income);
-    setTotalExpense(expense);
-  }, [transactionHistory]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-full bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white">

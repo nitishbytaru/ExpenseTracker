@@ -10,12 +10,17 @@ import {
 } from "../../utils/formHandleChanges";
 
 function TransactionForm() {
-  const { profile, startDate, setStartDate, inputData, setInputData } =
-    useContext(LoginContext);
+  const {
+    profile,
+    startDate,
+    setStartDate,
+    inputTransactionData,
+    setInputTransactionData,
+  } = useContext(LoginContext);
 
   useEffect(() => {
     if (profile) {
-      setInputData({
+      setInputTransactionData({
         user: profile._id,
         note: "",
         transactionType: "expense",
@@ -28,20 +33,21 @@ function TransactionForm() {
   const submitForm = async (event) => {
     event.preventDefault();
 
-    const { transactionType, note, user, transactionValue } = inputData;
+    const { transactionType, note, user, transactionValue } =
+      inputTransactionData;
 
     if (!transactionType && !note && !user && !profile && !transactionValue) {
       return showWarnToast("Input Fields are missing");
     }
 
     try {
-      await addTransaction(inputData);
+      await addTransaction(inputTransactionData);
       showSuccessToast("Transaction Added");
     } catch (error) {
       console.log(error);
     }
 
-    setInputData({
+    setInputTransactionData({
       user: profile._id,
       note: "",
       transactionType: "expense",
@@ -73,9 +79,9 @@ function TransactionForm() {
               type="text"
               id="note"
               name="note"
-              value={inputData.note}
+              value={inputTransactionData.note}
               onChange={(event) => {
-                handleTransactionChange(event, setInputData);
+                handleTransactionChange(event, setInputTransactionData);
               }}
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               placeholder="Salary"
@@ -94,10 +100,10 @@ function TransactionForm() {
               type="number"
               id="transactionValue"
               name="transactionValue"
-              value={inputData.transactionValue}
+              value={inputTransactionData.transactionValue}
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               onChange={(event) => {
-                handleTransactionChange(event, setInputData);
+                handleTransactionChange(event, setInputTransactionData);
               }}
               placeholder="999"
               required
@@ -115,9 +121,9 @@ function TransactionForm() {
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               name="transactionType"
               id="transactionType"
-              value={inputData.transactionType}
+              value={inputTransactionData.transactionType}
               onChange={(event) => {
-                handleTransactionChange(event, setInputData);
+                handleTransactionChange(event, setInputTransactionData);
               }}
               required
             >
@@ -137,7 +143,7 @@ function TransactionForm() {
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               selected={startDate}
               onChange={(date) => {
-                handleDateChange(date, setStartDate, setInputData);
+                handleDateChange(date, setStartDate, setInputTransactionData);
               }}
               dateFormat="dd/MM/yyyy"
               required

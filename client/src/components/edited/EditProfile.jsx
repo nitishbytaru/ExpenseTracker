@@ -3,17 +3,18 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import {
   deleteAccountReq,
-  getProfile,
   logout,
   updateProfileData,
-} from "../api/authApi.js";
-import { showSuccessToast, showWarnToast } from "../utils/toastUtils";
-import LoginContext from "../context/LoginContext";
+} from "../../api/authApi.js";
+import { showSuccessToast, showWarnToast } from "../../utils/toastUtils.js";
+import LoginContext from "../../context/LoginContext.js";
+import { isValidEmail } from "../../utils/formValidation.js";
+import { handleUserChange } from "../../utils/formHandleChanges.js";
+import { fetchUserData } from "../../utils/FetchUtils/fetchUserData.js";
 
 function EditProfile() {
-  const { setProfile, setIsLoggedIn } = useContext(LoginContext);
-
   const navigate = useNavigate();
+  const { setProfile, setIsLoggedIn } = useContext(LoginContext);
 
   const [userData, setUserData] = useState({
     username: "",
@@ -23,26 +24,8 @@ function EditProfile() {
   });
 
   useEffect(() => {
-    async function fetchUserData() {
-      try {
-        const { data } = await getProfile();
-        setUserData(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchUserData();
+    fetchUserData(setUserData);
   }, []);
-
-  function handleChange(event) {
-    const { name, value } = event.target;
-    setUserData({ ...userData, [name]: value });
-  }
-
-  function isValidEmail(email) {
-    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    return emailRegex.test(email);
-  }
 
   async function submitForm(e) {
     e.preventDefault();
@@ -101,7 +84,9 @@ function EditProfile() {
               className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 mt-1"
               placeholder="Enter your username"
               required
-              onChange={handleChange}
+              onChange={(event) => {
+                handleUserChange(event, userData, setUserData);
+              }}
               value={userData.username}
             />
           </div>
@@ -116,7 +101,9 @@ function EditProfile() {
               className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 mt-1"
               placeholder="Enter your email"
               required
-              onChange={handleChange}
+              onChange={(event) => {
+                handleUserChange(event, userData, setUserData);
+              }}
               value={userData.email}
             />
           </div>
@@ -132,7 +119,9 @@ function EditProfile() {
                 className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 mt-1"
                 placeholder="Enter your password"
                 required
-                onChange={handleChange}
+                onChange={(event) => {
+                  handleUserChange(event, userData, setUserData);
+                }}
                 value={userData.password}
               />
             </div>

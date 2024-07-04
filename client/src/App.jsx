@@ -1,9 +1,14 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./Layout";
-import { TransactionForm, History, Login, Register } from "./components/index";
-import EditTransaction from "./pages/EditTransaction.jsx";
-import EditProfile from "./pages/EditProfile.jsx";
+import {
+  TransactionForm,
+  History,
+  Login,
+  Register,
+  EditTransaction,
+  EditProfile,
+} from "./components/index.js";
 import LandingPage from "./pages/LandingPage.jsx";
 import NoPage from "./pages/NoPage.jsx";
 import LoginContextProvider from "./context/LoginContextProvider";
@@ -26,7 +31,11 @@ function App() {
               />
               <Route path="history" element={<History />} exact />
               <Route path="editProfile" element={<EditProfile />} exact />
-              <Route path="editTransaction" element={<EditTransaction />} exact />
+              <Route
+                path="editTransaction"
+                element={<EditTransaction />}
+                exact
+              />
             </Route>
           </Route>
           <Route path="*" element={<NoPage />} />
