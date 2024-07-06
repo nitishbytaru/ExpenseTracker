@@ -28,7 +28,7 @@ function TopNavBar({ toggleSideNav }) {
       <Link to="../" className="text-white p-2 rounded-full hover:bg-gray-700 ">
         <img
           className="w-20"
-          src="https://res.cloudinary.com/dhysbx7mk/image/upload/v1717826022/Expense_Tracker/LOGOS/logo_oxowgj.png"
+          src="https://res.cloudinary.com/dhysbx7mk/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1720268444/expense-tracker-app-rgb-color-icon-vector-39050843_savebc.jpg"
           alt=""
         />
       </Link>
