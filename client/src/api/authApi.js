@@ -20,7 +20,7 @@ export const register = async (data) => {
 export const login = async (data) => {
   try {
     const nitish = await axios.post(`${API_URL}/login`, data);
-    console.log(nitish);
+    // console.log(nitish);
     return true;
   } catch (error) {
     showErrorToast(error);

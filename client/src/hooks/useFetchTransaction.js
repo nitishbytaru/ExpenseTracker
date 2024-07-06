@@ -9,11 +9,14 @@ export function useFetchTransaction() {
     setTransactionHistory,
     inputDate,
     setInputDate,
+    isLoggedIn,
   } = useContext(LoginContext);
 
-  useEffect(() => {
-    fetchTransactions(setLoading, setTransactionHistory, inputDate);
-  }, []);
+  useEffect(() => { 
+    if (isLoggedIn) {
+      fetchTransactions(setLoading, setTransactionHistory, inputDate);
+    }
+  }, [isLoggedIn]);
 
   return { transactionHistory, inputDate, setInputDate };
 }

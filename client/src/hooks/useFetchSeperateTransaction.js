@@ -10,14 +10,17 @@ function calculateTotal(transactionHistory, type) {
 }
 
 export function useFetchSeperateTransaction() {
-  const { setTransactionHistory, setLoading } = useContext(LoginContext);
+  const { setTransactionHistory, setLoading, isLoggedIn } =
+    useContext(LoginContext);
   const { transactionHistory, inputDate } = useFetchTransaction();
 
   const [totalExpense, setTotalExpense] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
 
   useEffect(() => {
-    fetchTransactions(setLoading, setTransactionHistory, inputDate);
+    if (isLoggedIn) {
+      fetchTransactions(setLoading, setTransactionHistory, inputDate);
+    }
   }, [inputDate, setLoading, setTransactionHistory]);
 
   useEffect(() => {
