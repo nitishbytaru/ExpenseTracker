@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  addExpense,
+  addTransaction,
   history,
   filteredHistory,
   deleteTransaction,
@@ -11,7 +11,7 @@ import { verifyJWT } from "../middleware/auth.middlerware.js";
 const router = Router();
 
 // Add a new expense
-router.post("/expense", verifyJWT, addExpense);
+router.post("/addTransaction", verifyJWT, addTransaction);
 
 // Get transaction history
 router.get("/history", verifyJWT, history);
@@ -25,10 +25,5 @@ router
   .put(verifyJWT, updateTransaction)
   .delete(verifyJWT, deleteTransaction);
 
-// Update a transaction
-// router.put("/updateTransaction/:id", verifyJWT, updateTransaction);
-
-// Delete a transaction
-// router.delete("/deleteTransaction/:id", verifyJWT, deleteTransaction);
 
 export default router;

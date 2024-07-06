@@ -1,71 +1,59 @@
-import React, { useContext, useEffect } from "react";
-import LoginContext from "../../context/LoginContext";
+import React, { useContext } from "react";
+import LoginContext from "../../context/LoginContext.js";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { showSuccessToast, showWarnToast } from "../../utils/toastUtils";
-import { addTransaction } from "../../api/transactionApi.js";
+import { updateTransaction } from "../../api/transactionApi.js";
+import { showSuccessToast } from "../../utils/toastUtils.js";
+import { useNavigate } from "react-router-dom";
 import {
-  handleTransactionChange,
   handleDateChange,
-} from "../../utils/formHandleChanges";
+  handleTransactionChange,
+} from "../../utils/formHandleChanges.js";
 
-function TransactionForm() {
+function EditTransaction() {
+  const navigate = useNavigate();
+
   const {
     profile,
-    startDate,
     setStartDate,
     inputTransactionData,
     setInputTransactionData,
   } = useContext(LoginContext);
 
-  useEffect(() => {
-    if (profile) {
-      setInputTransactionData({
-        user: profile._id,
-        note: "",
-        transactionType: "expense",
-        transactionValue: "",
-        transactionDate: startDate,
-      });
-    }
-  }, [profile]);
-
   const submitForm = async (event) => {
     event.preventDefault();
+    const {
+      user,
+      _id,
+      note,
+      transactionDate,
+      transactionType,
+      transactionvalue,
+    } = inputTransactionData;
 
-    const { transactionType, note, user, transactionValue } =
-      inputTransactionData;
-
-    if (!transactionType && !note && !user && !profile && !transactionValue) {
+    if (
+      !profile &&
+      !note &&
+      !user &&
+      !transactionDate &&
+      !transactionType &&
+      !transactionvalue
+    ) {
       return showWarnToast("Input Fields are missing");
     }
 
     try {
-      await addTransaction(inputTransactionData);
-      showSuccessToast("Transaction Added");
+      await updateTransaction(_id, inputTransactionData);
+      showSuccessToast("Transaction updated");
     } catch (error) {
       console.log(error);
     }
-
-    setInputTransactionData({
-      user: profile._id,
-      note: "",
-      transactionType: "expense",
-      transactionValue: "",
-      transactionDate: startDate,
-    });
+    navigate("/history");
   };
 
-  if (!profile) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <div className="min-h-full flex items-center justify-center bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white">
-      <div className="bg-gray-800 p-10 rounded-lg shadow-xl w-full max-w-3xl">
-        <h1 className="text-3xl font-bold mb-8 text-center">
-          Add New Transaction
-        </h1>
+    <div className="min-h-full flex items-center justify-center bg-gray-900 text-white">
+      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-3xl">
+        <h1 className="text-2xl font-bold mb-6">Expense Tracker</h1>
 
         <form className="grid grid-cols-2 gap-6" onSubmit={submitForm}>
           <div className="col-span-2 md:col-span-1">
@@ -100,8 +88,8 @@ function TransactionForm() {
               type="number"
               id="transactionValue"
               name="transactionValue"
-              value={inputTransactionData.transactionValue}
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
+              value={inputTransactionData.transactionValue}
               onChange={(event) => {
                 handleTransactionChange(event, setInputTransactionData);
               }}
@@ -141,7 +129,7 @@ function TransactionForm() {
             </label>
             <DatePicker
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-              selected={startDate}
+              selected={inputTransactionData.transactionDate}
               onChange={(date) => {
                 handleDateChange(date, setStartDate, setInputTransactionData);
               }}
@@ -153,7 +141,7 @@ function TransactionForm() {
           <div className="col-span-2 text-center">
             <button
               type="submit"
-              className="w-1/3 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 transition duration-300 transform hover:scale-105"
+              className="w-1/3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
             >
               Submit
             </button>
@@ -164,4 +152,4 @@ function TransactionForm() {
   );
 }
 
-export default TransactionForm;
+export default EditTransaction;

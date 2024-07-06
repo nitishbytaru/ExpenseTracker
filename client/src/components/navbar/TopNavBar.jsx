@@ -53,7 +53,7 @@ function TopNavBar({ toggleSideNav }) {
           ) : (
             <>
               <li className="text-white p-2 rounded-lg hover:bg-blue-600">
-                <Link to="signup">Register</Link>
+                <Link to="register">Register</Link>
               </li>
               <li className="text-white p-2 rounded-lg hover:bg-green-600">
                 <Link to="login">Login</Link>

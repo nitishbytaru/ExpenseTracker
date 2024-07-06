@@ -9,7 +9,7 @@ import {
   showWarnToast,
 } from "../../utils/toastUtils";
 import { isValidEmail } from "../../utils/formValidation";
-import { handleChange } from "../../utils/formHandleChanges";
+import { handleUserChange } from "../../utils/formHandleChanges";
 
 function Login() {
   const navigate = useNavigate();
@@ -65,7 +65,7 @@ function Login() {
               placeholder="name@company.com"
               required
               onChange={(event) => {
-                handleChange(event, setUserInput);
+                handleUserChange(event, userInput, setUserInput);
               }}
               value={userInput.email}
             />
@@ -82,7 +82,7 @@ function Login() {
               placeholder="••••••••"
               required
               onChange={(event) => {
-                handleChange(event, setUserInput);
+                handleUserChange(event,userInput,setUserInput);
               }}
               value={userInput.password}
             />
@@ -96,7 +96,7 @@ function Login() {
           <div>
             <p>
               New user ?{" "}
-              <Link to="/signup" className="underline hover:text-blue-700">
+              <Link to="/register" className="underline hover:text-blue-700">
                 Register here !
               </Link>
             </p>
