@@ -7,7 +7,8 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: "https://expense-tracker-api-mu.vercel.app",
+          // target: "https://expense-tracker-api-mu.vercel.app",
+          target: process.env.BACKEND_API_URL,
           changeOrigin: true,
           secure: false,
         },
