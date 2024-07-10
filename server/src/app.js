@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
-// CORS configuration
 app.use(
   cors({
     origin: "https://expensetrackerclient.vercel.app",
@@ -21,8 +20,9 @@ app.use(cookieParser());
 import userRouter from "./routes/user.router.js";
 import transactionRouter from "./routes/transaction.router.js";
 
-//routes declarations
+//routes declerations
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/transaction", transactionRouter);
 
 export { app };
+
