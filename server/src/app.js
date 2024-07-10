@@ -4,12 +4,19 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
+// CORS configuration
 app.use(
   cors({
     origin: "https://expensetrackerclient.vercel.app",
     credentials: true,
   })
 );
+
+// Handle preflight requests
+app.options("*", cors({
+  origin: "https://expensetrackerclient.vercel.app",
+  credentials: true,
+}));
 
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
@@ -20,7 +27,7 @@ app.use(cookieParser());
 import userRouter from "./routes/user.router.js";
 import transactionRouter from "./routes/transaction.router.js";
 
-//routes declerations
+//routes declarations
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/transaction", transactionRouter);
 
