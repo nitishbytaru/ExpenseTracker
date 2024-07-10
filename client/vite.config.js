@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: "https://expense-tracker-api-mu.vercel.app",
+          target: "https://expensetracker-vbp3.onrender.com",
           changeOrigin: true,
           secure: false,
         },
