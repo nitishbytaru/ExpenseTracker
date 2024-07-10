@@ -19,6 +19,7 @@ export const register = async (data) => {
 
 //api for login
 export const login = async (data) => {
+  console.log(process.env.BACKEND_API_URL);
   try {
     const nitish = await axios.post(`${API_URL}/login`, data);
     // console.log(nitish);
