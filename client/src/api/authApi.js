@@ -1,7 +1,7 @@
 import axios from "axios";
 import { showErrorToast } from "../utils/toastUtils";
 
-const API_URL = import.meta.env.BACKEND_API_URL + "/api/v1/user";
+const API_URL = "https://expense-tracker-api-mu.vercel.app/api/v1/user";
 
 
 //api for register
@@ -19,7 +19,7 @@ export const register = async (data) => {
 
 //api for login
 export const login = async (data) => {
-  console.log(import.meta.env.BACKEND_API_URL);
+  console.log(API_URL);
   try {
     const nitish = await axios.post(`${API_URL}/login`, data);
     // console.log(nitish);
