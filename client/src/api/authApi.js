@@ -1,7 +1,7 @@
 import axios from "axios";
 import { showErrorToast } from "../utils/toastUtils";
 
-const API_URL ="/api/v1/user";
+const API_URL =process.env.BACKEND_API_URL+"/api/v1/user";
 
 
 //api for register
