@@ -1,7 +1,7 @@
 import axios from "axios";
 import { showErrorToast } from "../utils/toastUtils";
 
-const API_URL ="https://expense-tracker-api-mu.vercel.app/api/v1/user";
+const API_URL ="https://expensetracker-vbp3.onrender.com/api/v1/user";
 
 
 //api for register
