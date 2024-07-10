@@ -21,8 +21,6 @@ import userRouter from "./routes/user.router.js";
 import transactionRouter from "./routes/transaction.router.js";
 
 //routes declerations
-app.get("/api",(req,res)=>{res.send("home")})
-app.get("/",(req,res)=>{res.send("no no")})
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/transaction", transactionRouter);
 
