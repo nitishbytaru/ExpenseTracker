@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL ="/api/v1/transaction";
+const API_URL ="https://expensetracker-vbp3.onrender.com/api/v1/transaction";
 
 // API for sending form data
 export const addTransaction = async (Data) => {
