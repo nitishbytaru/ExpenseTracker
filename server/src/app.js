@@ -6,7 +6,8 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://expensetrackerclient.vercel.app",
+    // origin: "https://expensetrackerclient.vercel.app",
+    origin:"https://expense-tracker-api-mu.vercel.app",
     credentials: true,
   })
 );
