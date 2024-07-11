@@ -9,10 +9,8 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
   req.header("Authorization")?.replace("Bearer ", "");
 
 
-    console.log(token);
-
     if (!token) {
-      return res.status(401).send("Not authorized");
+      return res.status(401).send("Not authorized due to accessToken error");
     }
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
@@ -22,7 +20,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     );
 
     if (!user) {
-      return res.status(401).send("Not authorized");
+      return res.status(401).send("Not authorized due to user missing error");
     }
 
     req.user = user;
