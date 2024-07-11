@@ -8,6 +8,8 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
       req.cookies?.accessToken ||
       req.header("Authorization")?.replce("Bearer ", "");
 
+    console.log(token);
+
     if (!token) {
       return res.status(401).send("Not authorized");
     }
