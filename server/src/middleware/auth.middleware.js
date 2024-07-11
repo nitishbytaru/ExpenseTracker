@@ -10,7 +10,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 
 
     if (!token) {
-      return res.status(401).send("Not authorized due to accessToken error");
+      return res.status(401).send(req.cookies);
     }
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
