@@ -21,7 +21,9 @@ export const register = async (data) => {
 export const login = async (data) => {
   console.log(API_URL);
   try {
-    const nitish = await axios.post(`${API_URL}/login`, data);
+    const nitish = await axios.post(`${API_URL}/login`, data, {
+      withCredentials: true, 
+    });
     // console.log(nitish);
     return true;
   } catch (error) {
