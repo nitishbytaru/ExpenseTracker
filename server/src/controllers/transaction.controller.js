@@ -4,8 +4,14 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 //add expense
 const addTransaction = asyncHandler(async (req, res) => {
-  const { user, note, transactionType, transactionValue, transactionDate } =
-    req.body;
+  const {
+    user,
+    note,
+    category,
+    transactionType,
+    transactionValue,
+    transactionDate,
+  } = req.body;
 
   if (
     [
@@ -13,6 +19,7 @@ const addTransaction = asyncHandler(async (req, res) => {
       note?.trim(),
       transactionDate,
       transactionType,
+      category,
       transactionValue,
     ].some((field) => field === "")
   ) {
@@ -24,11 +31,10 @@ const addTransaction = asyncHandler(async (req, res) => {
       user,
       note,
       transactionType,
+      category,
       transactionValue: parseInt(transactionValue),
       transactionDate,
     });
-
-    console.log(transaction);
 
     res
       .status(201)
