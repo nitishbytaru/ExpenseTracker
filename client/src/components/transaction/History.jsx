@@ -51,14 +51,14 @@ function History() {
   }
 
   return (
-    <div className="min-h-full flex flex-col items-center justify-center bg-gray-900 text-white">
+    <div className="min-h-full flex flex-col items-center justify-center bg-gray-900 text-white p-4">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-5xl">
-        <div className="mb-4 flex justify-end items-center space-x-4">
+        <div className="mb-4 flex flex-col sm:flex-row justify-end items-center space-y-4 sm:space-y-0 sm:space-x-4">
           <div>
             <label className="flex flex-col">
               <span className="text-white text-lg">From:</span>
               <DatePicker
-                className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-36 p-2.5 bg-gray-700 text-white"
+                className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full sm:w-36 p-2.5 bg-gray-700 text-white"
                 selected={inputDate.startDate}
                 onChange={(date) =>
                   setInputDate({ ...inputDate, startDate: date })
@@ -70,7 +70,7 @@ function History() {
             <label className="flex flex-col">
               <span className="text-white text-lg">To:</span>
               <DatePicker
-                className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-36 p-2.5 bg-gray-700 text-white"
+                className="border border-gray-300 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full sm:w-36 p-2.5 bg-gray-700 text-white"
                 selected={inputDate.endDate}
                 onChange={(date) =>
                   setInputDate({ ...inputDate, endDate: date })
@@ -94,24 +94,27 @@ function History() {
           </button>
         </div>
 
-        <div className="relative rounded-2xl bg-gray-800 shadow-lg">
-          <div className="overflow-y-auto " style={{ maxHeight: "450px" }}>
-            <table className="w-full divide-y  text-sm text-left text-gray-500 ">
-              <thead className=" text-center text-xs text-gray-400 uppercase bg-gray-700">
+        <div className="relative rounded-2xl bg-gray-800 shadow-lg overflow-hidden">
+          <div className="overflow-y-auto" style={{ maxHeight: "450px" }}>
+            <table className="w-full divide-y text-sm text-left text-gray-500">
+              <thead className="text-center text-xs text-gray-400 uppercase bg-gray-700">
                 <tr>
-                  <th scope="col" className="px-6 py-3">
+                  <th scope="col" className="px-2 py-3">
                     Transaction Date
                   </th>
-                  <th scope="col" className="px-6 py-3">
+                  <th scope="col" className="px-2 py-3">
                     Note
                   </th>
-                  <th scope="col" className="px-6 py-3">
+                  <th scope="col" className="px-2 py-3">
                     Transaction Value
                   </th>
-                  <th scope="col" className="px-6 py-3">
+                  <th scope="col" className="px-2 py-3">
                     Transaction Type
                   </th>
-                  <th scope="col" className="px-6 py-3">
+                  <th scope="col" className="px-2 py-3">
+                    Category
+                  </th>
+                  <th scope="col" className="px-2 py-3">
                     Actions
                   </th>
                 </tr>
@@ -131,16 +134,18 @@ function History() {
                       note,
                       transactionType,
                       transactionDate,
+                      category,
                     }) => (
                       <tr
                         key={_id}
                         className="text-center font-medium text-white whitespace-nowrap"
                       >
-                        <td className="px-4 py-2">{transactionDate}</td>
-                        <td className="px-4 py-2">{note}</td>
-                        <td className="px-4 py-2">{transactionValue}</td>
-                        <td className="px-4 py-2">{transactionType}</td>
-                        <td className="px-4 py-2 grid grid-flow-col gap-2">
+                        <td className="px-2 py-2">{transactionDate}</td>
+                        <td className="px-2 py-2">{note}</td>
+                        <td className="px-2 py-2">{transactionValue}</td>
+                        <td className="px-2 py-2">{transactionType}</td>
+                        <td className="px-2 py-2">{category}</td>
+                        <td className="px-2 py-2 flex justify-center space-x-2">
                           <button
                             onClick={() => {
                               editTransactionCall(_id);

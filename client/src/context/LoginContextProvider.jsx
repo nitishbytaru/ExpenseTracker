@@ -7,6 +7,7 @@ const LoginContextProvider = ({ children }) => {
   const [startDate, setStartDate] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [transactionHistory, setTransactionHistory] = useState([]);
+  const [formType, setFormType] = useState("income");
   const [inputDate, setInputDate] = useState({
     startDate: new Date(),
     endDate: new Date(),
@@ -14,7 +15,8 @@ const LoginContextProvider = ({ children }) => {
   const [inputTransactionData, setInputTransactionData] = useState({
     user: "",
     note: "",
-    transactionType: "expense",
+    transactionType: formType,
+    category: "income",
     transactionValue: 0,
     transactionDate: startDate,
   });
@@ -45,6 +47,8 @@ const LoginContextProvider = ({ children }) => {
         setLoading,
         inputDate,
         setInputDate,
+        formType,
+        setFormType,
       }}
     >
       {children}
