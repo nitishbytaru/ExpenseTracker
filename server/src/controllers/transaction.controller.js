@@ -88,13 +88,15 @@ const filteredHistory = asyncHandler(async (req, res) => {
 
 //update a transaction
 const updateTransaction = asyncHandler(async (req, res) => {
-  const { note, transactionType, transactionValue, transactionDate } = req.body;
+  const { category, note, transactionType, transactionValue, transactionDate } =
+    req.body;
   const { id } = req.params;
   try {
     const transaction = await Transaction.findByIdAndUpdate(
       id,
       {
         note,
+        category,
         transactionType,
         transactionValue,
         transactionDate,
