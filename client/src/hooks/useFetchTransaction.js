@@ -12,9 +12,9 @@ export function useFetchTransaction() {
     isLoggedIn,
   } = useContext(LoginContext);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (isLoggedIn) {
-      fetchTransactions(setLoading, setTransactionHistory, inputDate);
+      fetchTransactions(setLoading, setTransactionHistory, inputDate, true);
     }
   }, [isLoggedIn]);
 

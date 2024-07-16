@@ -10,8 +10,9 @@ export async function fetchTransactions(
   setLoading(true);
   try {
     const { data } = isFiltered
-      ? await getFilteredHistory({ inputDate })
+      ? await getFilteredHistory(inputDate)
       : await getHistory();
+
     const formattedTransactionHistory = data.map((transaction) => ({
       ...transaction,
       transactionDate: new Date(
@@ -25,7 +26,6 @@ export async function fetchTransactions(
       )
     );
   } catch (error) {
-    console.error("Error fetching transaction history:", error);
     showErrorToast("Error fetching transaction history");
   } finally {
     setLoading(false);
