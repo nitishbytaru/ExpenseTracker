@@ -4,14 +4,21 @@ import LoginContext from "./LoginContext";
 const LoginContextProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profile, setProfile] = useState(null);
+
+  //this date is for the transaction Form
   const [startDate, setStartDate] = useState(new Date());
+
+  //this date is for the history
+  const [inputDate, setInputDate] = useState({
+    startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+  });
+
   const [loading, setLoading] = useState(false);
   const [transactionHistory, setTransactionHistory] = useState([]);
   const [formType, setFormType] = useState("income");
-  const [inputDate, setInputDate] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
-  });
+
+  // this is for transaction form replace it with the registrationform
   const [inputTransactionData, setInputTransactionData] = useState({
     user: "",
     note: "",

@@ -3,11 +3,17 @@ import { useNavigate, Link } from "react-router-dom";
 import LoginContext from "../context/LoginContext";
 import { showSuccessToast, showWarnToast } from "../utils/toastUtils.js";
 import { useFetchSeperateTransaction } from "../hooks/useFetchSeperateTransaction.js";
+import moment from "moment";
 
 function LandingPage() {
   const navigate = useNavigate();
   const { profile } = useContext(LoginContext);
   const { totalIncome, totalExpense } = useFetchSeperateTransaction();
+
+  // Example usage
+  // const startDate = ; // Current date
+  // const monthName = ;
+  // console.log(); // This will print the month in words, e.g., "July"
 
   function clicked() {
     if (profile) {
@@ -36,13 +42,17 @@ function LandingPage() {
       {profile ? (
         <div className="flex mt-12">
           <div className="text-center m-4 p-6 bg-gray-700 rounded-lg shadow-lg max-w-sm w-100">
-            <p className="text-2xl font-semibold mb-2">Total Income:</p>
+            <p className="text-2xl font-semibold mb-2">
+              Total Income of {moment().format("MMMM")}
+            </p>
             <span className="text-4xl font-bold text-green-400">
               ₹ {totalIncome}
             </span>
           </div>
           <div className="text-center m-4 p-6 bg-gray-700 rounded-lg shadow-lg max-w-sm w-100">
-            <p className="text-2xl font-semibold mb-2">Total Expense:</p>
+            <p className="text-2xl font-semibold mb-2">
+              Total Expense of {moment().format("MMMM")}
+            </p>
             <span className="text-4xl font-bold text-red-400">
               ₹ {totalExpense}
             </span>

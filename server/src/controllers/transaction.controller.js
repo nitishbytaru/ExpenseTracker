@@ -73,10 +73,11 @@ const filteredHistory = asyncHandler(async (req, res) => {
     const transactionHistory = await Transaction.find({
       user: req.user._id,
       transactionDate: {
-        $gt: startDate,
-        $lt: endDate,
+        $gte: startDate,
+        $lte: endDate,
       },
     });
+
     res
       .status(200)
       .json(new ApiResponse(200, transactionHistory, "Transactions history"));

@@ -4,7 +4,6 @@ import { showErrorToast } from "../utils/toastUtils";
 const API_URL = "https://expensetracker-vbp3.onrender.com/api/v1/user";
 // const API_URL = "/api/v1/user";
 
-
 // api for register
 export const register = async (data) => {
   try {
@@ -20,12 +19,12 @@ export const register = async (data) => {
 };
 
 // api for login
-export const login = async (data) => {
+export const login = async (Data) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, data, {
+    const { data } = await axios.post(`${API_URL}/login`, Data, {
       withCredentials: true,
     });
-    return true;
+    return data;
   } catch (error) {
     showErrorToast(error);
     return false;
@@ -35,9 +34,13 @@ export const login = async (data) => {
 // api for logout
 export const logout = async () => {
   try {
-    const response = await axios.post(`${API_URL}/logout`, {}, {
-      withCredentials: true,
-    });
+    const response = await axios.post(
+      `${API_URL}/logout`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
     return response;
   } catch (error) {
     console.log(error);
