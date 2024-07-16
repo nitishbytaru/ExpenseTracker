@@ -81,6 +81,22 @@ function SideNavBar({ toggleSideNav }) {
 
         <li className="w-full mb-4">
           <NavLink
+            to="analysis"
+            onClick={toggleSideNav}
+            className={({ isActive }) =>
+              `block w-full p-4 text-center text-lg font-semibold rounded-lg ${
+                isActive
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-800 text-gray-300 hover:bg-blue-500 hover:text-white"
+              }`
+            }
+          >
+            Chart Analysis
+          </NavLink>
+        </li>
+
+        <li className="w-full mb-4">
+          <NavLink
             to="../"
             onClick={callLogout}
             className={({ isActive }) =>
