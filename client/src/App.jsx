@@ -8,6 +8,7 @@ import {
   Register,
   EditTransaction,
   EditProfile,
+  Analysis,
 } from "./components/index.js";
 import LandingPage from "./pages/LandingPage.jsx";
 import NoPage from "./pages/NoPage.jsx";
@@ -31,6 +32,7 @@ function App() {
               />
               <Route path="history" element={<History />} exact />
               <Route path="editProfile" element={<EditProfile />} exact />
+              <Route path="analysis" element={<Analysis />} exact />
               <Route
                 path="editTransaction"
                 element={<EditTransaction />}
