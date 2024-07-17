@@ -10,9 +10,7 @@ function TopNavBar({ toggleSideNav }) {
   useEffect(() => {
     async function checkProfile() {
       try {
-        const email = JSON.parse(localStorage.getItem("email"));
-        const password = JSON.parse(localStorage.getItem("password"));
-        if (email && password) {
+        if (localStorage.getItem("refreshToken")) {
           const { data } = await getProfile();
           setProfile(data);
         }

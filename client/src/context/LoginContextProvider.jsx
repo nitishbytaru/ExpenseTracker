@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import LoginContext from "./LoginContext";
+import { getProfile } from "../api/authApi";
 
 const LoginContextProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,13 +30,17 @@ const LoginContextProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem("email");
-    const storedPassword = localStorage.getItem("password");
-    if (storedEmail && storedPassword) {
+    if (localStorage.getItem("refreshToken")) {
       setIsLoggedIn(true);
-      setProfile({ email: JSON.parse(storedEmail) });
+
+      async function callProfile() {
+        const { data } = await getProfile();
+        setProfile(data);
+      }
+
+      callProfile();
     }
-  }, []);
+  }, [isLoggedIn]);
 
   return (
     <LoginContext.Provider

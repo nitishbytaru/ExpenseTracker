@@ -30,12 +30,10 @@ function Login() {
       return showWarnToast("Given email is invalid. Please retry");
 
     try {
-      const res = await login(userInput);
-      if (res) {
-        localStorage.setItem("email", JSON.stringify(email));
-        localStorage.setItem("password", JSON.stringify(password));
+      const { data } = await login(userInput);
+      if (data) {
         setIsLoggedIn(true);
-        setProfile(userInput);
+        setProfile(data);
         setUserInput({
           email: "",
           password: "",
@@ -82,7 +80,7 @@ function Login() {
               placeholder="••••••••"
               required
               onChange={(event) => {
-                handleUserChange(event,userInput,setUserInput);
+                handleUserChange(event, userInput, setUserInput);
               }}
               value={userInput.password}
             />
