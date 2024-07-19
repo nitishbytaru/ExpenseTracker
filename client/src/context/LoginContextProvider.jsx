@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import LoginContext from "./LoginContext";
+import { getProfile } from "../api/authApi";
 
 const LoginContextProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -28,12 +29,19 @@ const LoginContextProvider = ({ children }) => {
     transactionDate: startDate,
   });
 
+  //this is for the current goal selected for the crud operations
+  const [selectedGoal, setSelectedGoal] = useState(null);
+
   useEffect(() => {
-    const storedEmail = localStorage.getItem("email");
-    const storedPassword = localStorage.getItem("password");
-    if (storedEmail && storedPassword) {
+    if (localStorage.getItem("refreshToken")) {
       setIsLoggedIn(true);
-      setProfile({ email: JSON.parse(storedEmail) });
+
+      async function callProfile() {
+        const { data } = await getProfile();
+        setProfile(data);
+      }
+
+      if (isLoggedIn) callProfile();
     }
   }, []);
 
@@ -56,6 +64,8 @@ const LoginContextProvider = ({ children }) => {
         setInputDate,
         formType,
         setFormType,
+        selectedGoal,
+        setSelectedGoal,
       }}
     >
       {children}

@@ -4,6 +4,11 @@ import { showErrorToast } from "../utils/toastUtils";
 const API_URL = "https://expensetracker-vbp3.onrender.com/api/v1/user";
 // const API_URL = "/api/v1/user";
 
+// Helper function to set access token in headers
+const setAccessToken = (token) => {
+  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+};
+
 // api for register
 export const register = async (data) => {
   try {
@@ -14,7 +19,7 @@ export const register = async (data) => {
       withCredentials: true,
     });
   } catch (error) {
-    console.log(error);
+    showErrorToast(error.response?.data?.message || "Registration failed");
   }
 };
 
@@ -24,9 +29,14 @@ export const login = async (Data) => {
     const { data } = await axios.post(`${API_URL}/login`, Data, {
       withCredentials: true,
     });
+    const { accessToken, refreshToken } = data.data;
+
+    localStorage.setItem("refreshToken", refreshToken);
+    setAccessToken(accessToken);
+
     return data;
   } catch (error) {
-    showErrorToast(error);
+    showErrorToast(error || "Login failed");
     return false;
   }
 };
@@ -34,16 +44,15 @@ export const login = async (Data) => {
 // api for logout
 export const logout = async () => {
   try {
-    const response = await axios.post(
-      `${API_URL}/logout`,
-      {},
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await axios.post(`${API_URL}/logout`, {
+      withCredentials: true,
+    });
+    localStorage.removeItem("refreshToken");
+    delete axios.defaults.headers.common["Authorization"];
     return response;
   } catch (error) {
-    console.log(error);
+    showErrorToast(error.response?.data?.message || "Logout failed");
+    throw error;
   }
 };
 
@@ -55,8 +64,8 @@ export const getProfile = async () => {
     });
     return data;
   } catch (error) {
-    console.log(error);
-    return;
+    showErrorToast(error.response?.data?.message || "Failed to fetch profile");
+    throw error;
   }
 };
 
@@ -67,8 +76,8 @@ export const updateProfileData = async (data) => {
       withCredentials: true,
     });
   } catch (error) {
-    console.log(error);
-    return;
+    showErrorToast(error.response?.data?.message || "Failed to update profile");
+    throw error;
   }
 };
 
@@ -79,6 +88,44 @@ export const deleteAccountReq = async () => {
       withCredentials: true,
     });
   } catch (error) {
-    console.log(error);
+    showErrorToast(error.response?.data?.message || "Failed to delete account");
+    throw error;
   }
 };
+
+// Refresh access token function
+export const refreshAccessToken = async () => {
+  try {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) throw new Error("No refresh token available");
+
+    const { data } = await axios.post(
+      `${API_URL}/refresh-token`,
+      { refreshToken },
+      { withCredentials: true }
+    );
+    const { accessToken } = data.data;
+
+    setAccessToken(accessToken);
+    return accessToken;
+  } catch (error) {
+    showErrorToast("Session expired. Please log in again.");
+    logout();
+    throw error;
+  }
+};
+
+// Axios response interceptor for token refreshing
+axios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const newAccessToken = await refreshAccessToken();
+      setAccessToken(newAccessToken);
+      return axios(originalRequest);
+    }
+    return Promise.reject(error);
+  }
+);

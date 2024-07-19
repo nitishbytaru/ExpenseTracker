@@ -30,7 +30,8 @@ const generateAccessAndRefreshToken = async (userId) => {
 };
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  const incomingRefreshToken = req.cookie.refreshToken || req.body.refreshToken;
+  const incomingRefreshToken =
+    req.cookie?.refreshToken || req.body.refreshToken;
 
   if (!incomingRefreshToken) {
     return res.status(400).send("Unotherized request");
@@ -55,7 +56,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     const options = {
       httpOnly: true,
       secure: true,
-       sameSite: 'None',
+      sameSite: "None",
     };
 
     const { accessToken, newRefreshToken } =
@@ -155,7 +156,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const options = {
       httpOnly: true,
       secure: true,
-       sameSite: 'None',
+      sameSite: "None",
     };
 
     return res

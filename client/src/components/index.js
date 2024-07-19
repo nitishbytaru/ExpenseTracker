@@ -5,4 +5,7 @@ export { default as Login } from "./registration/Login";
 export { default as Register } from "./registration/Register";
 export { default as EditProfile } from "./edited/EditProfile";
 export { default as EditTransaction } from "./edited/EditTransaction";
+export { default as EditGoal } from "./edited/EditGoal";
 export { default as Analysis } from "./budget/Analysis";
+export { default as GoalForm } from "./budget/GoalForm";
+export { default as Goal } from "./budget/Goal";

@@ -20,9 +20,11 @@ app.use(cookieParser());
 // routes importing
 import userRouter from "./routes/user.router.js";
 import transactionRouter from "./routes/transaction.router.js";
+import goalRouter from "./routes/goal.router.js";
 
 //routes declerations
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/transaction", transactionRouter);
+app.use("/api/v1/goal", goalRouter);
 
 export { app };

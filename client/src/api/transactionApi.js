@@ -6,7 +6,6 @@ const API_URL ="https://expensetracker-vbp3.onrender.com/api/v1/transaction";
 // API for sending form data
 export const addTransaction = async (Data) => {
   try {
-    console.log(Data);
     await axios.post(`${API_URL}/addTransaction`, Data, {
       withCredentials: true,
     });

@@ -23,7 +23,7 @@ const addTransaction = asyncHandler(async (req, res) => {
       transactionValue,
     ].some((field) => field === "")
   ) {
-    res.status(400, "Please fill all fields");
+    res.status(400).send("Please fill all fields");
   }
 
   try {
