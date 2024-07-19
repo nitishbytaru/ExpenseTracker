@@ -1,8 +1,8 @@
 import axios from "axios";
 import { showErrorToast } from "../utils/toastUtils.js";
 
-// const API_URL = "https://expensetracker-vbp3.onrender.com/api/v1/goal";
-const API_URL = "/api/v1/goal";
+const API_URL = "https://expensetracker-vbp3.onrender.com/api/v1/goal";
+// const API_URL = "/api/v1/goal";
 
 //api for adding new goal
 export const addGoal = async (Data) => {

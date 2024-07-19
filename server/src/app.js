@@ -6,8 +6,8 @@ const app = express();
 
 app.use(
   cors({
-    // origin: "https://expense-nd-trackers.netlify.app",
-    origin: "http://localhost:3000",
+    origin: "https://expense-nd-trackers.netlify.app",
+    // origin: "http://localhost:3000",
     credentials: true,
   })
 );
