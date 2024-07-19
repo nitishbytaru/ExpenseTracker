@@ -1,8 +1,8 @@
 import axios from "axios";
 import { showErrorToast } from "../utils/toastUtils";
 
-const API_URL = "https://expensetracker-vbp3.onrender.com/api/v1/user";
-// const API_URL = "/api/v1/user";
+// const API_URL = "https://expensetracker-vbp3.onrender.com/api/v1/user";
+const API_URL = "/api/v1/user";
 
 // Helper function to set access token in headers
 const setAccessToken = (token) => {
@@ -20,7 +20,6 @@ export const register = async (data) => {
     });
   } catch (error) {
     showErrorToast(error.response?.data?.message || "Registration failed");
-    throw error;
   }
 };
 
@@ -37,7 +36,7 @@ export const login = async (Data) => {
 
     return data;
   } catch (error) {
-    showErrorToast(error.response?.data?.message || "Login failed");
+    showErrorToast(error || "Login failed");
     return false;
   }
 };
@@ -102,7 +101,7 @@ export const refreshAccessToken = async () => {
 
     const { data } = await axios.post(
       `${API_URL}/refresh-token`,
-      { token: refreshToken },
+      { refreshToken },
       { withCredentials: true }
     );
     const { accessToken } = data.data;

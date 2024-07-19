@@ -10,7 +10,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 
 
     if (!token) {
-      return res.status(401).send("Not authorized due to miof accessToken");
+      return res.status(401).send("Not authorized due to missing of accessToken");
     }
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);

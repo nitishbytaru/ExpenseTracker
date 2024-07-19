@@ -9,6 +9,9 @@ import {
   EditTransaction,
   EditProfile,
   Analysis,
+  Goal,
+  GoalForm,
+  EditGoal,
 } from "./components/index.js";
 import LandingPage from "./pages/LandingPage.jsx";
 import NoPage from "./pages/NoPage.jsx";
@@ -33,6 +36,9 @@ function App() {
               <Route path="history" element={<History />} exact />
               <Route path="editProfile" element={<EditProfile />} exact />
               <Route path="analysis" element={<Analysis />} exact />
+              <Route path="goal" element={<Goal />} exact />
+              <Route path="goalForm" element={<GoalForm />} exact />
+              <Route path="editGoal" element={<EditGoal />} exact />
               <Route
                 path="editTransaction"
                 element={<EditTransaction />}

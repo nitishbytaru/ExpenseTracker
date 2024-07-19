@@ -29,6 +29,9 @@ const LoginContextProvider = ({ children }) => {
     transactionDate: startDate,
   });
 
+  //this is for the current goal selected for the crud operations
+  const [selectedGoal, setSelectedGoal] = useState(null);
+
   useEffect(() => {
     if (localStorage.getItem("refreshToken")) {
       setIsLoggedIn(true);
@@ -38,9 +41,9 @@ const LoginContextProvider = ({ children }) => {
         setProfile(data);
       }
 
-      callProfile();
+      if (isLoggedIn) callProfile();
     }
-  }, [isLoggedIn]);
+  }, []);
 
   return (
     <LoginContext.Provider
@@ -61,6 +64,8 @@ const LoginContextProvider = ({ children }) => {
         setInputDate,
         formType,
         setFormType,
+        selectedGoal,
+        setSelectedGoal,
       }}
     >
       {children}

@@ -1,13 +1,10 @@
 import React, { useState } from "react";
-import {
-  showErrorToast,
-  showSuccessToast,
-  showWarnToast,
-} from "../../utils/toastUtils";
+import { showErrorToast, showSuccessToast, showWarnToast } from "../../utils/toastUtils";
 import { useNavigate } from "react-router-dom";
 import { register } from "../../api/authApi";
 import { isValidEmail } from "../../utils/formValidation";
 import { handleFileChange, handleUserChange } from "../../utils/formHandleChanges";
+import { Oval } from "react-loader-spinner";
 
 function Register() {
   const navigate = useNavigate();
@@ -19,13 +16,13 @@ function Register() {
     password: "",
     Cpassword: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const submitForm = async (e) => {
     e.preventDefault();
     const { username, email, password, Cpassword } = userInput;
 
-    if (!email && !password)
-      return showWarnToast("Email and Password Required");
+    if (!email && !password) return showWarnToast("Email and Password Required");
 
     if (!isValidEmail(email))
       return showWarnToast("Given email is invalid. Please retry");
@@ -38,6 +35,7 @@ function Register() {
     formData.append("password", password);
     formData.append("avatar", file);
 
+    setLoading(true);
     try {
       await register(formData);
       showSuccessToast("Registration successful");
@@ -46,6 +44,7 @@ function Register() {
       console.log(error);
       showErrorToast(error);
     }
+    setLoading(false);
     setUserInput({
       username: "",
       email: "",
@@ -148,8 +147,22 @@ function Register() {
             <button
               type="submit"
               className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              disabled={loading}
             >
-              Create Account
+              {loading ? (
+                <Oval
+                  height={20}
+                  width={20}
+                  color="#ffffff"
+                  visible={true}
+                  ariaLabel="oval-loading"
+                  secondaryColor="#cccccc"
+                  strokeWidth={2}
+                  strokeWidthSecondary={2}
+                />
+              ) : (
+                "Create Account"
+              )}
             </button>
           </div>
         </form>
