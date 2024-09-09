@@ -1,8 +1,8 @@
 import axios from "axios";
 import { showErrorToast } from "../utils/toastUtils";
 
-const API_URL = "https://expensetracker-vbp3.onrender.com/api/v1/user";
-// const API_URL = "/api/v1/user";
+// const API_URL = "https://expensetracker-vbp3.onrender.com/api/v1/user";
+const API_URL = "/api/v1/user";
 
 // Helper function to set access token in headers
 const setAccessToken = (token) => {
@@ -26,6 +26,7 @@ export const register = async (data) => {
 // api for login
 export const login = async (Data) => {
   try {
+    console.log(Data);
     const { data } = await axios.post(`${API_URL}/login`, Data, {
       withCredentials: true,
     });

@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { verifyJWT } from "../middleware/auth.middleware.js";
 import {
   addGoal,
   getGoals,
@@ -10,18 +9,18 @@ import {
 const router = Router();
 
 //add new budget
-router.post("/addGoal", verifyJWT, addGoal);
+router.post("/addGoal", addGoal);
 
 //get all goals
-router.get("/getGoals", verifyJWT, getGoals);
+router.get("/getGoals", getGoals);
 
 //add money to the goal
-router.post("/addMoneyToGoal/:userId", verifyJWT, addMoneyToGoal);
+router.post("/addMoneyToGoal/:userId", addMoneyToGoal);
 
 //update the goal
-router.post("/updateGoal/:goalId", verifyJWT, updateGoal);
+router.post("/updateGoal/:goalId", updateGoal);
 
 //delete the goal
-router.get("/deleteGoal/:goalId", verifyJWT, deleteGoal);
+router.get("/deleteGoal/:goalId", deleteGoal);
 
 export default router;

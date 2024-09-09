@@ -6,28 +6,43 @@ import {
   getProfile,
   updateProfileData,
   deleteAccount,
-  refreshAccessToken,
 } from "../controllers/user.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
-import { verifyJWT } from "../middleware/auth.middleware.js";
+import { isAuthenticated } from "../middleware/auth.middleware.js";
+import passport from "passport";
 
 const router = Router();
 
-router
-  .route("/register")
-  .post(upload.fields([{ name: "avatar", maxCount: 1 }]), registerUser);
+//route for register
+router.post(
+  "/register",
+  upload.fields([{ name: "avatar", maxCount: 1 }]),
+  registerUser
+);
 
-router.route("/login").post(loginUser);
+//route for login
+router.post(
+  "/login",
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    failureFlash: "login failed",
+  }),
+  loginUser
+);
 
-router.route("/logout").post(verifyJWT, logoutUser);
+// Apply `isAuthenticated` middleware to all routes that require authentication
+router.use(isAuthenticated);
 
-router.route("/refresh-token").post(refreshAccessToken);
+//route for logout
+router.post("/logout", logoutUser);
 
-router
-  .route("/profile")
-  .get(verifyJWT, getProfile)
-  .put(verifyJWT, updateProfileData);
+//route for getting currentUser
+router.get("/profile", getProfile);
 
-router.route("/delete-account").delete(verifyJWT, deleteAccount);
+//route for updating the current user Data
+router.put("/profile", updateProfileData);
+
+//route for deleting the current user
+router.delete("/delete-account", deleteAccount);
 
 export default router;

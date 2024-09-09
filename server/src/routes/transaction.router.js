@@ -6,24 +6,22 @@ import {
   deleteTransaction,
   updateTransaction,
 } from "../controllers/transaction.controller.js";
-import { verifyJWT } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
 // Add a new expense
-router.post("/addTransaction", verifyJWT, addTransaction);
+router.post("/addTransaction", addTransaction);
 
 // Get transaction history
-router.get("/history", verifyJWT, history);
+router.get("/history", history);
 
 // Get filtered transaction history
-router.post("/history/filtered", verifyJWT, filteredHistory);
+router.post("/history/filtered", filteredHistory);
 
 //Update and Delete transaction
 router
   .route("/transaction/:id")
-  .put(verifyJWT, updateTransaction)
-  .delete(verifyJWT, deleteTransaction);
-
+  .put(updateTransaction)
+  .delete(deleteTransaction);
 
 export default router;
