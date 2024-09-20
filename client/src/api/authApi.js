@@ -1,13 +1,8 @@
 import axios from "axios";
-import { showErrorToast } from "../utils/toastUtils";
+import { showErrorMessageToast, showErrorToast } from "../utils/toastUtils";
 
 const API_URL = "https://expensetracker-vbp3.onrender.com/api/v1/user";
 // const API_URL = "/api/v1/user";
-
-// Helper function to set access token in headers
-const setAccessToken = (token) => {
-  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-};
 
 // api for register
 export const register = async (data) => {
@@ -29,14 +24,16 @@ export const login = async (Data) => {
     const { data } = await axios.post(`${API_URL}/login`, Data, {
       withCredentials: true,
     });
-    const { accessToken, refreshToken } = data.data;
 
-    localStorage.setItem("refreshToken", refreshToken);
-    setAccessToken(accessToken);
-
-    return data;
+    if (data.success) {
+      return data;
+    } else {
+      showErrorMessageToast("Invalid username or password");
+      return false;
+    }
   } catch (error) {
-    showErrorToast(error || "Login failed");
+    console.log("error", error);
+    showErrorToast(error);
     return false;
   }
 };
@@ -114,18 +111,3 @@ export const refreshAccessToken = async () => {
     throw error;
   }
 };
-
-// Axios response interceptor for token refreshing
-axios.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const newAccessToken = await refreshAccessToken();
-      setAccessToken(newAccessToken);
-      return axios(originalRequest);
-    }
-    return Promise.reject(error);
-  }
-);

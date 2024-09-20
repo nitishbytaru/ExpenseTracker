@@ -30,7 +30,6 @@ export const getGoals = async () => {
 
 export const addMoneyToGoal = async (userId, Data) => {
   try {
-    console.log(Data);
     const { data } = await axios.post(
       `${API_URL}/addMoneyToGoal/${userId}`,
       Data,

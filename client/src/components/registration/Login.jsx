@@ -1,48 +1,37 @@
-import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { login } from "../../api/authApi";
-import LoginContext from "../../context/LoginContext";
-import {
-  showErrorToast,
-  showSuccessToast,
-  showWarnToast,
-} from "../../utils/toastUtils";
-import { isValidEmail } from "../../utils/formValidation";
 import { handleUserChange } from "../../utils/formHandleChanges";
+import { setIsLoggedIn, setProfile } from "../../app/slices/authSlice";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 
 function Login() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { setIsLoggedIn, setProfile } = useContext(LoginContext);
   const [userInput, setUserInput] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
   const submitForm = async (e) => {
     e.preventDefault();
-    const { email, password } = userInput;
 
-    if (!email && !password)
-      return showWarnToast("Email and Password Required");
-
-    if (!isValidEmail(email))
-      return showWarnToast("Given email is invalid. Please retry");
+    if (!userInput.username || !userInput.password) {
+      return toast.warning("Username and Password are required");
+    }
 
     try {
-      const { data } = await login(userInput);
-      if (data) {
-        setIsLoggedIn(true);
-        setProfile(data);
-        setUserInput({
-          email: "",
-          password: "",
-        });
-        navigate("../");
-        showSuccessToast("Login Successful");
-      }
+      const loginResponse = await login(userInput);
+      const profileData = loginResponse.user;
+      setIsLoggedIn(true);
+      dispatch(setProfile(profileData));
+      localStorage.setItem("profile", JSON.stringify(profileData));
+      setUserInput({ username: "", password: "" });
+      navigate("../");
+      toast.success("Login Successful");
     } catch (error) {
-      showErrorToast(error);
+      toast.error(error.response?.data || "Login failed");
     }
   };
 
@@ -52,20 +41,20 @@ function Login() {
         <h1 className="text-2xl font-bold mb-6">Login to your account</h1>
         <form onSubmit={submitForm}>
           <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium">
-              Your email
+            <label htmlFor="username" className="block text-sm font-medium">
+              Your Username
             </label>
             <input
-              type="email"
-              name="email"
-              id="email"
+              type="text"
+              name="username"
+              id="username"
               className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
-              placeholder="name@company.com"
+              placeholder="username"
               required
-              onChange={(event) => {
-                handleUserChange(event, userInput, setUserInput);
-              }}
-              value={userInput.email}
+              onChange={(event) =>
+                handleUserChange(event, userInput, setUserInput)
+              }
+              value={userInput.username}
             />
           </div>
           <div className="mb-4">
@@ -79,9 +68,9 @@ function Login() {
               className="bg-gray-700 border border-gray-600 text-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
               placeholder="••••••••"
               required
-              onChange={(event) => {
-                handleUserChange(event, userInput, setUserInput);
-              }}
+              onChange={(event) =>
+                handleUserChange(event, userInput, setUserInput)
+              }
               value={userInput.password}
             />
           </div>
@@ -93,9 +82,9 @@ function Login() {
           </button>
           <div>
             <p>
-              New user ?{" "}
+              New user?{" "}
               <Link to="/register" className="underline hover:text-blue-700">
-                Register here !
+                Register here!
               </Link>
             </p>
           </div>

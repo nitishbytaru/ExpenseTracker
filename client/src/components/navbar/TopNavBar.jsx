@@ -1,25 +1,20 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getProfile } from "../../api/authApi";
-import LoginContext from "../../context/LoginContext";
-import { showErrorToast } from "../../utils/toastUtils";
+import { useDispatch } from "react-redux";
+import { setProfile } from "../../app/slices/authSlice";
 
 function TopNavBar({ toggleSideNav }) {
-  const { isLoggedIn, profile, setProfile } = useContext(LoginContext);
+  const profile = useSelector((state) => state.auth.profile);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    async function checkProfile() {
-      try {
-        if (localStorage.getItem("refreshToken")) {
-          const { data } = await getProfile();
-          setProfile(data);
-        }
-      } catch (error) {
-        showErrorToast(error.response.data);
-      }
+    const savedProfile = localStorage.getItem("profile");
+    if (savedProfile !== "undefined") {
+      dispatch(setProfile(JSON.parse(savedProfile)));
     }
-    if (isLoggedIn) checkProfile();
-  }, [isLoggedIn]);
+  }, [dispatch]);
 
   return (
     <div className="bg-gray-800 h-16 flex items-center justify-between px-6 shadow-lg">
@@ -27,27 +22,25 @@ function TopNavBar({ toggleSideNav }) {
         <img
           className="w-20"
           src="https://res.cloudinary.com/dhysbx7mk/image/upload/v1720689247/download-removebg-preview_taddsa.png"
-          alt=""
+          alt="Logo"
         />
       </Link>
 
       <div>
         <ul className="flex space-x-4">
           {profile ? (
-            <>
-              <li
-                className="text-white p-2 rounded-lg hover:bg-green-600"
-                onClick={toggleSideNav}
-              >
-                <div className="w-full flex justify-center align-middle">
-                  <img
-                    className="w-11 h-11 object-cover rounded-full"
-                    src={`${profile.avatar}`}
-                    alt=""
-                  />
-                </div>
-              </li>
-            </>
+            <li
+              className="text-white p-2 rounded-lg hover:bg-green-600"
+              onClick={toggleSideNav}
+            >
+              <div className="w-full flex justify-center align-middle">
+                <img
+                  className="w-11 h-11 object-cover rounded-full"
+                  src={profile.avatar}
+                  alt="Profile"
+                />
+              </div>
+            </li>
           ) : (
             <>
               <li className="text-white p-2 rounded-lg hover:bg-blue-600">

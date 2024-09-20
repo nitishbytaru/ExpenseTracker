@@ -1,29 +1,40 @@
-import React, { useContext } from "react";
-import { fetchTransactions } from "../../utils/FetchUtils/fetchTransactions.js";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 import { useFetchTransaction } from "../../hooks/useFetchTransaction";
-import { deleteTransaction } from "../../api/transactionApi";
-import { showSuccessToast } from "../../utils/toastUtils";
-import { toast } from "sonner";
-import DatePicker from "react-datepicker";
+import {
+  deleteTransaction,
+  getFilteredHistory,
+  getHistory,
+} from "../../api/transactionApi";
 import "react-datepicker/dist/react-datepicker.css";
+import { toast } from "sonner";
+
+import {
+  setInputTransactionData,
+  setTransactionHistory,
+} from "../../app/slices/transactionSlice.js";
+import { setLoading } from "../../app/slices/authSlice.js";
+
+import DatePicker from "react-datepicker";
 import RefreshTwoToneIcon from "@mui/icons-material/RefreshTwoTone";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import LoginContext from "../../context/LoginContext";
-import { useNavigate } from "react-router-dom";
 
 function History() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const {
-    loading,
-    setInputTransactionData,
-    setLoading,
-    setTransactionHistory,
-  } = useContext(LoginContext);
+  const loading = useSelector((state) => state.auth.loading);
+  const [inputDate, setInputDate] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+  });
 
-  const { transactionHistory, inputDate, setInputDate } = useFetchTransaction();
+  const { transactionHistory } = useFetchTransaction();
 
+  //function to delete a transaction
   function deleteTransactionCall(id) {
     toast.warning("Confirm to delete transaction", {
       action: {
@@ -31,8 +42,8 @@ function History() {
         onClick: async () => {
           try {
             await deleteTransaction(id);
-            fetchTransactions(setLoading, setTransactionHistory, inputDate);
-            showSuccessToast("Transaction deleted");
+            getAllTransaction();
+            toast.success("Transaction deleted");
           } catch (error) {
             console.error("Error deleting transaction:", error);
             toast.error("Error deleting transaction");
@@ -42,10 +53,27 @@ function History() {
     });
   }
 
+  //function to edit the transaction
   function editTransactionCall(id) {
     const Data = transactionHistory.find((obj) => obj._id === id);
-    setInputTransactionData(Data);
+    dispatch(setInputTransactionData(Data));
     navigate("/editTransaction");
+  }
+
+  //function to call all the transactions
+  async function getAllTransaction() {
+    dispatch(setLoading(true));
+    const response = await getHistory();
+    dispatch(setTransactionHistory(response.data.data));
+    dispatch(setLoading(false));
+  }
+
+  //function to call on the transactions which were in the given dates
+  async function getFilteredTransaction() {
+    dispatch(setLoading(true));
+    const response = await getFilteredHistory();
+    dispatch(setTransactionHistory(response.data.data));
+    dispatch(setLoading(false));
   }
 
   return (
@@ -55,9 +83,7 @@ function History() {
           <div>
             <button
               className="text-white bg-gray-700 hover:bg-gray-600 focus:ring-4 focus:ring-blue-500 font-medium rounded-lg text-sm px-4 py-2.5"
-              onClick={() =>
-                fetchTransactions(setLoading, setTransactionHistory, inputDate)
-              }
+              onClick={() => getAllTransaction()}
             >
               All
             </button>
@@ -88,14 +114,7 @@ function History() {
           </div>
           <button
             className="text-white bg-gray-700 hover:bg-gray-600 focus:ring-4 focus:ring-blue-500 font-medium rounded-lg text-sm px-4 py-2.5"
-            onClick={() =>
-              fetchTransactions(
-                setLoading,
-                setTransactionHistory,
-                inputDate,
-                true
-              )
-            }
+            onClick={() => getFilteredTransaction()}
             disabled={loading}
           >
             <RefreshTwoToneIcon fontSize="large" />
@@ -135,7 +154,7 @@ function History() {
                     </td>
                   </tr>
                 ) : (
-                  transactionHistory.map(
+                  transactionHistory?.map(
                     ({
                       _id,
                       transactionValue,
@@ -148,7 +167,9 @@ function History() {
                         key={_id}
                         className="text-center font-medium text-white whitespace-nowrap"
                       >
-                        <td className="px-2 py-2">{transactionDate}</td>
+                        <td className="px-2 py-2">
+                          {new Date(transactionDate).toLocaleDateString()}
+                        </td>
                         <td className="px-2 py-2">{note}</td>
                         <td className="px-2 py-2">{transactionValue}</td>
                         <td className="px-2 py-2">{transactionType}</td>

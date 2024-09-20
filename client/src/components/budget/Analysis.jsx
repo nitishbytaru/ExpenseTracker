@@ -10,7 +10,7 @@ function Analysis() {
   });
 
   function calculateCategory(transactions, type) {
-    return transactions
+    return transactions.data
       .filter((transaction) => transaction.category === type)
       .reduce((acc, curr) => acc + curr.transactionValue, 0);
   }

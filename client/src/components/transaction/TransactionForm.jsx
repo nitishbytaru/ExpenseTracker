@@ -1,38 +1,59 @@
-import React, { useContext, useEffect, useState } from "react";
-import LoginContext from "../../context/LoginContext.js";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { showSuccessToast, showWarnToast } from "../../utils/toastUtils.js";
 import { addTransaction } from "../../api/transactionApi.js";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  handleTransactionChange,
-  handleDateChange,
-} from "../../utils/formHandleChanges.js";
+  setStartDate,
+  setInputTransactionData,
+  setFormType,
+} from "../../app/slices/transactionSlice.js";
+import { toast } from "sonner";
 
 function TransactionForm() {
-  const {
-    profile,
-    startDate,
-    setStartDate,
-    inputTransactionData,
-    setInputTransactionData,
-    formType,
-    setFormType,
-  } = useContext(LoginContext);
+  const dispatch = useDispatch();
+
+  const profile = useSelector((state) => state.auth.profile);
+  const startDate = useSelector((state) => state.transaction.startDate);
+  const formType = useSelector((state) => state.transaction.formType);
+  const inputTransactionData = useSelector(
+    (state) => state.transaction.inputTransactionData
+  );
+
   const [formCategory, setFormCategory] = useState(
     inputTransactionData.category
   );
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    dispatch(setInputTransactionData({ [name]: value }));
+  };
+
+  //this functionis used to handle the date change in the current form
+  const handleDateChangeFunc = (date) => {
+    const isoDate = date.toISOString();
+    dispatch(setStartDate(isoDate));
+
+    const updatedDate = {
+      ...inputTransactionData,
+      date: isoDate,
+    };
+
+    dispatch(setInputTransactionData(updatedDate));
+  };
+
   useEffect(() => {
     if (profile) {
-      setInputTransactionData({
-        user: profile._id,
-        note: "",
-        transactionType: formType,
-        category: formCategory,
-        transactionValue: "",
-        transactionDate: startDate,
-      });
+      dispatch(
+        setInputTransactionData({
+          user: profile._id,
+          note: "",
+          transactionType: formType,
+          category: formCategory,
+          transactionValue: "",
+          transactionDate: startDate,
+        })
+      );
     }
   }, [profile, formType]);
 
@@ -42,24 +63,26 @@ function TransactionForm() {
     const { note, user, transactionValue } = inputTransactionData;
 
     if (!note && !user && !profile && !transactionValue) {
-      return showWarnToast("Input Fields are missing");
+      return toast.warning("Input Fields are missing");
     }
 
     try {
-      await addTransaction(inputTransactionData);
-      showSuccessToast("Transaction Added");
+      const response = await addTransaction(inputTransactionData);
+      toast.success(response.data.message);
     } catch (error) {
       console.log(error);
     }
 
-    setInputTransactionData({
-      user: profile._id,
-      note: "",
-      transactionType: formType,
-      category: "income",
-      transactionValue: "",
-      transactionDate: startDate,
-    });
+    dispatch(
+      setInputTransactionData({
+        user: profile._id,
+        note: "",
+        transactionType: formType,
+        category: "income",
+        transactionValue: "",
+        transactionDate: startDate,
+      })
+    );
   };
 
   if (!profile) {
@@ -75,7 +98,7 @@ function TransactionForm() {
             className={`w-1/3 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mx-2 transition duration-300 transform hover:scale-105 ${
               formType === "income" ? "bg-blue-700" : ""
             }`}
-            onClick={() => setFormType("income")}
+            onClick={() => dispatch(setFormType("income"))}
           >
             Income Form
           </button>
@@ -84,7 +107,7 @@ function TransactionForm() {
               formType === "expense" ? "bg-blue-700" : ""
             }`}
             onClick={() => {
-              setFormType("expense");
+              dispatch(setFormType("expense"));
               setFormCategory("need");
             }}
           >
@@ -105,9 +128,7 @@ function TransactionForm() {
                 id="note"
                 name="note"
                 value={inputTransactionData.note}
-                onChange={(event) => {
-                  handleTransactionChange(event, setInputTransactionData);
-                }}
+                onChange={handleInputChange}
                 className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
                 placeholder="Salary"
                 required
@@ -127,9 +148,7 @@ function TransactionForm() {
                 name="transactionValue"
                 value={inputTransactionData.transactionValue}
                 className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-                onChange={(event) => {
-                  handleTransactionChange(event, setInputTransactionData);
-                }}
+                onChange={handleInputChange}
                 placeholder="999"
                 required
               />
@@ -147,9 +166,7 @@ function TransactionForm() {
                 name="category"
                 id="category"
                 value={inputTransactionData.category}
-                onChange={(event) => {
-                  handleTransactionChange(event, setInputTransactionData);
-                }}
+                onChange={handleInputChange}
                 required
               >
                 <option value="need" defaultValue>
@@ -169,10 +186,8 @@ function TransactionForm() {
               </label>
               <DatePicker
                 className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-                selected={startDate}
-                onChange={(date) => {
-                  handleDateChange(date, setStartDate, setInputTransactionData);
-                }}
+                selected={new Date(startDate)}
+                onChange={handleDateChangeFunc}
                 dateFormat="dd/MM/yyyy"
                 required
               />
@@ -201,9 +216,7 @@ function TransactionForm() {
                 id="note"
                 name="note"
                 value={inputTransactionData.note}
-                onChange={(event) => {
-                  handleTransactionChange(event, setInputTransactionData);
-                }}
+                onChange={handleInputChange}
                 className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
                 placeholder="Salary"
                 required
@@ -223,9 +236,7 @@ function TransactionForm() {
                 name="transactionValue"
                 value={inputTransactionData.transactionValue}
                 className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
-                onChange={(event) => {
-                  handleTransactionChange(event, setInputTransactionData);
-                }}
+                onChange={handleInputChange}
                 placeholder="999"
                 required
               />
@@ -241,9 +252,7 @@ function TransactionForm() {
               <DatePicker
                 className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
                 selected={startDate}
-                onChange={(date) => {
-                  handleDateChange(date, setStartDate, setInputTransactionData);
-                }}
+                onChange={handleDateChangeFunc}
                 dateFormat="dd/MM/yyyy"
                 required
               />

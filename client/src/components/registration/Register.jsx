@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { showErrorToast, showSuccessToast, showWarnToast } from "../../utils/toastUtils";
 import { useNavigate } from "react-router-dom";
 import { register } from "../../api/authApi";
-import { isValidEmail } from "../../utils/formValidation";
-import { handleFileChange, handleUserChange } from "../../utils/formHandleChanges";
+import {
+  handleFileChange,
+  handleUserChange,
+} from "../../utils/formHandleChanges";
 import { Oval } from "react-loader-spinner";
+import { isValidEmail } from "../../utils/emailValidate/emailValidate.js";
+import { toast } from "sonner";
 
 function Register() {
   const navigate = useNavigate();
@@ -22,12 +25,13 @@ function Register() {
     e.preventDefault();
     const { username, email, password, Cpassword } = userInput;
 
-    if (!email && !password) return showWarnToast("Email and Password Required");
+    if (!email && !password)
+      return toast.warning("Email and Password Required");
 
     if (!isValidEmail(email))
-      return showWarnToast("Given email is invalid. Please retry");
+      return toast.warning("Given email is invalid. Please retry");
 
-    if (password !== Cpassword) return showWarnToast("Passwords do not match");
+    if (password !== Cpassword) return toast.warning("Passwords do not match");
 
     const formData = new FormData();
     formData.append("email", email);
@@ -38,11 +42,11 @@ function Register() {
     setLoading(true);
     try {
       await register(formData);
-      showSuccessToast("Registration successful");
+      toast.success("Registration successful");
       navigate("../");
     } catch (error) {
       console.log(error);
-      showErrorToast(error);
+      toast.error(error);
     }
     setLoading(false);
     setUserInput({

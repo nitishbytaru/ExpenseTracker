@@ -1,24 +1,26 @@
-import React, { useContext } from "react";
-import LoginContext from "../../context/LoginContext.js";
-import DatePicker from "react-datepicker";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { updateTransaction } from "../../api/transactionApi.js";
-import { showSuccessToast, showWarnToast } from "../../utils/toastUtils.js";
 import { useNavigate } from "react-router-dom";
 import {
   handleDateChange,
   handleTransactionChange,
 } from "../../utils/formHandleChanges.js";
+import {
+  setStartDate,
+  setInputTransactionData,
+} from "../../app/slices/transactionSlice";
+import { toast } from "sonner";
+import DatePicker from "react-datepicker";
 
 function EditTransaction() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const {
-    profile,
-    startDate,
-    setStartDate,
-    inputTransactionData,
-    setInputTransactionData,
-  } = useContext(LoginContext);
+  const profile = useSelector((state) => state.auth.profile);
+  const { startDate, inputTransactionData } = useSelector(
+    (state) => state.transaction
+  );
 
   const submitForm = async (event) => {
     event.preventDefault();
@@ -39,12 +41,12 @@ function EditTransaction() {
       !transactionType &&
       !transactionValue
     ) {
-      return showWarnToast("Input Fields are missing");
+      return toast.warning("Input Fields are missing");
     }
 
     try {
       await updateTransaction(_id, inputTransactionData);
-      showSuccessToast("Transaction updated");
+      toast.success("Transaction updated");
     } catch (error) {
       console.log(error);
     }
@@ -76,7 +78,9 @@ function EditTransaction() {
               name="note"
               value={inputTransactionData.note}
               onChange={(event) => {
-                handleTransactionChange(event, setInputTransactionData);
+                handleTransactionChange(event, (data) =>
+                  dispatch(setInputTransactionData(data))
+                );
               }}
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               placeholder="Note"
@@ -98,7 +102,9 @@ function EditTransaction() {
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               value={inputTransactionData.transactionValue}
               onChange={(event) => {
-                handleTransactionChange(event, setInputTransactionData);
+                handleTransactionChange(event, (data) =>
+                  dispatch(setInputTransactionData(data))
+                );
               }}
               placeholder="999"
               required
@@ -119,7 +125,9 @@ function EditTransaction() {
                 id="category"
                 value={inputTransactionData.category}
                 onChange={(event) => {
-                  handleTransactionChange(event, setInputTransactionData);
+                  handleTransactionChange(event, (data) =>
+                    dispatch(setInputTransactionData(data))
+                  );
                 }}
                 required
               >
@@ -141,7 +149,11 @@ function EditTransaction() {
               className="border border-gray-500 text-md font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 text-white"
               selected={startDate}
               onChange={(date) => {
-                handleDateChange(date, setStartDate, setInputTransactionData);
+                handleDateChange(
+                  date,
+                  (date) => dispatch(setStartDate(date)),
+                  (data) => dispatch(setInputTransactionData(data))
+                );
               }}
               dateFormat="dd/MM/yyyy"
               required

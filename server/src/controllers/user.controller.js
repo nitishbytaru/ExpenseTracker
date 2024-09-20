@@ -7,76 +7,6 @@ import {
 } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { extractPublicId } from "cloudinary-build-url";
-import jwt from "jsonwebtoken";
-
-const generateAccessAndRefreshToken = async (userId) => {
-  try {
-    const user = await User.findById(userId);
-    const accessToken = user.generateAccessToken();
-    const refreshToken = user.generateRefreshToken();
-
-    user.refreshToken = refreshToken;
-
-    await user.save({ validateBeforeSave: false });
-
-    return { accessToken, refreshToken };
-  } catch (error) {
-    return res
-      .status(500)
-      .send(
-        " something went wrong while generating access and refresh Token           "
-      );
-  }
-};
-
-const refreshAccessToken = asyncHandler(async (req, res) => {
-  const incomingRefreshToken =
-    req.cookie?.refreshToken || req.body.refreshToken;
-
-  if (!incomingRefreshToken) {
-    return res.status(400).send("Unotherized request");
-  }
-
-  try {
-    const decodedToken = jwt.verify(
-      incomingRefreshToken,
-      process.env.REFRESH_TOKEN_SECRET
-    );
-
-    const user = await User.findById(decodedToken?._id);
-
-    if (!user) {
-      return res.status(401).send("Invalid Refresh Token");
-    }
-
-    if (incomingRefreshToken !== user?.refreshToken) {
-      return res.status(401).send("Refresh Token Expried");
-    }
-
-    const options = {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-    };
-
-    const { accessToken, newRefreshToken } =
-      await generateAccessAndRefreshToken(user._id);
-
-    return res
-      .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", newRefreshToken, options)
-      .json(
-        new ApiResponse(
-          200,
-          { accessToken, refreshToken: newRefreshToken },
-          "Access Token Refreshed"
-        )
-      );
-  } catch (error) {
-    return res.status(401).send("Invalid Refresh Token");
-  }
-});
 
 //register user
 const registerUser = asyncHandler(async (req, res) => {
@@ -105,14 +35,17 @@ const registerUser = asyncHandler(async (req, res) => {
       return res.status(400).send("Avatar file is required");
     }
 
-    const createdUser = await User.create({
+    //all the user form data is stored in this object after validation checking
+    const createUser = {
       username: username.toLowerCase(),
       email,
-      password,
       avatar: avatar.url,
-    });
+    };
 
-    if (!createdUser) {
+    //here is the pasport based registration is being used
+    const registeredUser = await User.register(createUser, password);
+
+    if (!registeredUser) {
       return res
         .status(500)
         .send("Something went wrong while registering User");
@@ -120,91 +53,36 @@ const registerUser = asyncHandler(async (req, res) => {
 
     return res
       .status(201)
-      .json(new ApiResponse(200, createdUser, "User created successfully"));
+      .json(new ApiResponse(200, registeredUser, "User created successfully"));
   } catch (error) {
     return res.status(500).send("Something went wrong while registering User");
   }
 });
 
-//login user
+//logic to login the user
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-
-  if ([email, password].some((field) => field?.trim() === "")) {
-    return res.status(400, "Fill all the fields");
-  }
-
-  try {
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(400).send("User not found");
-    }
-
-    if (user.password !== password) {
-      return res.status(406).send("Invalid Password");
-    }
-
-    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-      user._id
-    );
-
-    const loggedInUser = await User.findById(user._id).select(
-      "-password -refreshToken"
-    );
-
-    const options = {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-    };
-
-    return res
-      .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
-      .json(
-        new ApiResponse(
-          200,
-          { user: loggedInUser, accessToken, refreshToken },
-          "User logged in successfully"
-        )
-      );
-  } catch (error) {
-    return res.status(500).send("Something went wrong while logging in User");
-  }
+  const { _id, email, username, avatar } = req.user;
+  res.json({
+    success: true,
+    message: "Login successful",
+    user: { _id, username, email, avatar },
+  });
 });
 
-//logout user
-const logoutUser = asyncHandler(async (req, res) => {
-  User.findByIdAndUpdate(
-    req.user._id,
-    {
-      $set: {
-        refreshToken: undefined,
-      },
-    },
-    {
-      new: true,
+//logic to logout the user
+const logoutUser = asyncHandler(async (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      next(err);
     }
-  );
-
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-
-  res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged out successfully"));
+    res.send("you are logged out");
+  });
 });
 
-//user profile
+//logic to get the entire data of the user
 const getProfile = asyncHandler(async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.find({ username: req.session.passport?.user });
 
     if (!user) {
       return res.status(401).send("Not Logged In");
@@ -215,35 +93,6 @@ const getProfile = asyncHandler(async (req, res) => {
     return res
       .status(500)
       .send("Something went wrong while getting user profile");
-  }
-});
-
-//edit the details of user profile details
-const updateProfileData = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
-
-  if ([email, username, password].some((field) => field?.trim() === "")) {
-    res.status(400).send("Please provide all the fields");
-  }
-
-  try {
-    const user = await User.findByIdAndUpdate(
-      req.user?._id,
-      {
-        $set: {
-          username,
-          email,
-          password,
-        },
-      },
-      { new: true }
-    );
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, user, "Profile Updated Successfully"));
-  } catch (error) {
-    res.status(500).send("Something went wrong while updating profile");
   }
 });
 
@@ -265,10 +114,8 @@ const deleteAccount = asyncHandler(async (req, res) => {
 
 export {
   registerUser,
+  getProfile,
   loginUser,
   logoutUser,
-  getProfile,
-  updateProfileData,
   deleteAccount,
-  refreshAccessToken,
 };
