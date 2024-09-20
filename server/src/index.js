@@ -12,4 +12,3 @@ connectDB()
     console.log("MONGO db connection failed !!! ", err);
   });
 
-// now starting to connet to the frontend
