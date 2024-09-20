@@ -1,5 +1,4 @@
 import { getHistory, getFilteredHistory } from "../../api/transactionApi";
-import { showErrorToast } from "../toastUtils";
 
 export async function fetchTransactions(
   setLoading,
@@ -7,11 +6,13 @@ export async function fetchTransactions(
   inputDate,
   isFiltered = false
 ) {
-  setLoading(true);
+  setLoading(true); // Dispatch the loading state
   try {
-    const { data } = isFiltered
+    const response = isFiltered
       ? await getFilteredHistory(inputDate)
       : await getHistory();
+    console.log(response.data);
+    const data = response.data?.data;
 
     const formattedTransactionHistory = data.map((transaction) => ({
       ...transaction,
@@ -20,13 +21,14 @@ export async function fetchTransactions(
       ).toLocaleDateString(),
     }));
 
+    // Dispatch the updated transaction history to Redux
     setTransactionHistory(
       formattedTransactionHistory.sort(
         (a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)
       )
     );
   } catch (error) {
-    showErrorToast("Error fetching transaction history");
+    console.log(error);
   } finally {
     setLoading(false);
   }

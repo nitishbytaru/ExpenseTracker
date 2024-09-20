@@ -1,25 +1,26 @@
-import React, { useContext } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
-import { showSuccessToast, showErrorToast } from "../../utils/toastUtils";
+import { useDispatch } from "react-redux";
 import { logout } from "../../api/authApi";
-import LoginContext from "../../context/LoginContext";
+import { setIsLoggedIn, setProfile } from "../../app/slices/authSlice";
+
+import { toast } from "sonner";
 import CloseTwoToneIcon from "@mui/icons-material/CloseTwoTone";
 
 function SideNavBar({ toggleSideNav }) {
-  const { setIsLoggedIn, setProfile } = useContext(LoginContext);
+  const dispatch = useDispatch();
 
   async function callLogout() {
     try {
       await logout();
-      localStorage.removeItem("email");
-      localStorage.removeItem("password");
-      setIsLoggedIn(false);
-      setProfile(undefined);
+      localStorage.removeItem("profile");
+      dispatch(setIsLoggedIn(false));
+      dispatch(setProfile(null));
+      toast.success("Logout  Successfull");
     } catch (error) {
-      showErrorToast(error.response.data);
+      toast.error(error.response.data);
     }
     toggleSideNav();
-    showSuccessToast("Logout Successful");
   }
 
   return (
@@ -32,6 +33,7 @@ function SideNavBar({ toggleSideNav }) {
       </button>
       <ul className="w-full">
         <li className="w-full mb-4">
+          {" "}
           <NavLink
             to="transactionform"
             onClick={toggleSideNav}
@@ -43,11 +45,12 @@ function SideNavBar({ toggleSideNav }) {
               }`
             }
           >
-            Add Transaction
-          </NavLink>
-        </li>
-
+            {" "}
+            Add Transaction{" "}
+          </NavLink>{" "}
+        </li>{" "}
         <li className="w-full mb-4">
+          {" "}
           <NavLink
             to="history"
             onClick={toggleSideNav}
@@ -59,11 +62,12 @@ function SideNavBar({ toggleSideNav }) {
               }`
             }
           >
-            Transaction History
-          </NavLink>
-        </li>
-
+            {" "}
+            Transaction History{" "}
+          </NavLink>{" "}
+        </li>{" "}
         <li className="w-full mb-4">
+          {" "}
           <NavLink
             to="analysis"
             onClick={toggleSideNav}
@@ -75,11 +79,12 @@ function SideNavBar({ toggleSideNav }) {
               }`
             }
           >
-            Chart Analysis
-          </NavLink>
-        </li>
-
+            {" "}
+            Chart Analysis{" "}
+          </NavLink>{" "}
+        </li>{" "}
         <li className="w-full mb-4">
+          {" "}
           <NavLink
             to="goal"
             onClick={toggleSideNav}
@@ -91,26 +96,10 @@ function SideNavBar({ toggleSideNav }) {
               }`
             }
           >
-            Goals
-          </NavLink>
-        </li>
-
-        <li className="w-full mb-4">
-          <NavLink
-            to="editProfile"
-            onClick={toggleSideNav}
-            className={({ isActive }) =>
-              `block w-full p-4 text-center text-lg font-semibold rounded-lg ${
-                isActive
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-blue-500 hover:text-white"
-              }`
-            }
-          >
-            Edit Profile
-          </NavLink>
-        </li>
-
+            {" "}
+            Goals{" "}
+          </NavLink>{" "}
+        </li>{" "}
         <li className="w-full mb-4">
           <NavLink
             to="../"

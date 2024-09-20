@@ -7,13 +7,11 @@ export function handleUserChange(event, input, setInput) {
   setInput({ ...input, [name]: value });
 }
 
-export function handleTransactionChange(event, setInputData) {
+export const handleTransactionChange = (event, dispatchAction) => {
   const { name, value } = event.target;
-  setInputData((prevInputData) => ({
-    ...prevInputData,
-    [name]: value,
-  }));
-}
+  // Call the dispatchAction with the updated data
+  dispatchAction({ [name]: value });
+};
 
 export const handleDateChange = (date, setStartDate, setInputData) => {
   setStartDate(date);

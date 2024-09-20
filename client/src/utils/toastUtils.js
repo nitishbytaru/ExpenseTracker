@@ -9,8 +9,8 @@ export const showSuccessToast = (message) => {
   });
 };
 
-export const showErrorToast = (error) => {
-  toast.error(error.response?.data || "An error occurred", {
+export const showErrorMessageToast = (message) => {
+  toast.error(message, {
     cancel: {
       label: "Cancel",
       onClick: () => {},
@@ -20,6 +20,15 @@ export const showErrorToast = (error) => {
 
 export const showWarnToast = (message) => {
   toast.warning(message, {
+    cancel: {
+      label: "Cancel",
+      onClick: () => {},
+    },
+  });
+};
+
+export const showErrorToast = (error) => {
+  toast.error(error.message || error.response?.data || "An error occurred", {
     cancel: {
       label: "Cancel",
       onClick: () => {},

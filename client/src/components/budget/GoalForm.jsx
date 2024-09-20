@@ -1,12 +1,12 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { handleUserChange } from "../../utils/formHandleChanges";
 import { addGoal } from "../../api/GoalApi";
-import LoginContext from "../../context/LoginContext";
 import { useNavigate } from "react-router-dom";
 
 function GoalForm() {
   const navigate = useNavigate();
-  const { profile } = useContext(LoginContext);
+  const profile = useSelector((state) => state.auth.profile);
 
   const [goalFormData, setGoalFormData] = useState({
     user: profile._id,

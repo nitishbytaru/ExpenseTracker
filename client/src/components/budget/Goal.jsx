@@ -1,17 +1,16 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Menu, MenuItem, IconButton } from "@mui/material";
 import { toast } from "sonner";
 import Modal from "react-modal";
 import { deleteGoal, getGoals, updateGoal } from "../../api/GoalApi";
-import LoginContext from "../../context/LoginContext";
-import { showSuccessToast } from "../../utils/toastUtils";
-
-Modal.setAppElement("#root");
+import { useDispatch, useSelector } from "react-redux";
+import { setSelectedGoal } from "../../app/slices/transactionSlice";
 
 function Goal() {
-  const { selectedGoal, setSelectedGoal } = useContext(LoginContext);
+  const selectedGoal = useSelector((state) => state.transaction.selectedGoal);
+  const dispatch = useDispatch();
   const [goalHistory, setGoalHistory] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,7 +29,7 @@ function Goal() {
 
   function handleMenuClick(event, goal) {
     setAnchorEl(event.currentTarget);
-    setSelectedGoal(goal);
+    dispatch(setSelectedGoal(goal));
   }
 
   const handleAddAmount = () => {
@@ -45,7 +44,7 @@ function Goal() {
         onClick: async () => {
           try {
             await deleteGoal(selectedGoal._id);
-            showSuccessToast("Goal deleted");
+            toast.success("Goal deleted");
             fetchGoals();
           } catch (error) {
             console.error("Error deleting goal:", error);
@@ -67,7 +66,7 @@ function Goal() {
         amount,
         progress: progress + parseFloat(progressAmount),
       });
-      showSuccessToast("Progress updated");
+      toast.success("Progress updated");
       fetchGoals();
       setIsModalOpen(false);
       setProgressAmount("");
@@ -152,6 +151,7 @@ function Goal() {
           isOpen={isModalOpen}
           className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center p-4"
           overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+          appElement={document.getElementById("root")}
         >
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
             <h2 className="text-white text-2xl font-bold mb-4 text-center">

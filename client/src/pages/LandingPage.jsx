@@ -1,29 +1,61 @@
-import React, { useContext } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import LoginContext from "../context/LoginContext";
-import { showSuccessToast, showWarnToast } from "../utils/toastUtils.js";
-import { useFetchSeperateTransaction } from "../hooks/useFetchSeperateTransaction.js";
+
+import { setTransactionHistory } from "../app/slices/transactionSlice";
+import { getHistory } from "../api/transactionApi.js";
+
+import { toast } from "sonner";
 import moment from "moment";
+
+//to calculate the total expense and total income seperately
+function calculateTotal(transactionHistory, type) {
+  return transactionHistory
+    .filter((transaction) => transaction.transactionType === type)
+    .reduce((acc, curr) => acc + curr.transactionValue, 0);
+}
 
 function LandingPage() {
   const navigate = useNavigate();
-  const { profile } = useContext(LoginContext);
-  const { totalIncome, totalExpense } = useFetchSeperateTransaction();
+  const dispatch = useDispatch();
 
-  // Example usage
-  // const startDate = ; // Current date
-  // const monthName = ;
-  // console.log(); // This will print the month in words, e.g., "July"
+  const profile = useSelector((state) => state.auth.profile);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const transactionHistory = useSelector(
+    (state) => state.transaction.transactionHistory
+  );
 
-  function clicked() {
+  const [totalExpense, setTotalExpense] = useState(0);
+  const [totalIncome, setTotalIncome] = useState(0);
+
+  useEffect(() => {
+    function callIt() {
+      if (transactionHistory?.length > 0) {
+        setTotalIncome(calculateTotal(transactionHistory, "income"));
+        setTotalExpense(calculateTotal(transactionHistory, "expense"));
+      }
+    }
+    if (isLoggedIn) callIt();
+  }, [transactionHistory]);
+
+  useEffect(() => {
+    async function getAllTransaction() {
+      const response = await getHistory(); //function to call all the transactions
+      dispatch(setTransactionHistory(response.data.data));
+    }
+    if (isLoggedIn) getAllTransaction();
+  }, [isLoggedIn]);
+
+  //this function is created only once as we have used the useCallback function
+  const clicked = useCallback(() => {
     if (profile) {
       navigate("transactionform");
-      showSuccessToast("Add your Transaction Now!");
+      toast.success("Add your Transaction Now!");
     } else {
       navigate("login");
-      showWarnToast("Login first to Start!");
+      toast.warning("login first to start!");
     }
-  }
+  });
 
   return (
     <div className="flex flex-col items-center justify-center min-h-full bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white">

@@ -1,14 +1,15 @@
 import axios from "axios";
 
-// const API_URL ="https://expensetracker-vbp3.onrender.com/api/v1/transaction";
-const API_URL = "/api/v1/transaction";
+const API_URL ="https://expensetracker-vbp3.onrender.com/api/v1/transaction";
+// const API_URL = "/api/v1/transaction";
 
 // API for sending form data
 export const addTransaction = async (Data) => {
   try {
-    await axios.post(`${API_URL}/addTransaction`, Data, {
+    const response = await axios.post(`${API_URL}/addTransaction`, Data, {
       withCredentials: true,
     });
+    return response;
   } catch (error) {
     console.log(error);
     return error;
@@ -18,10 +19,10 @@ export const addTransaction = async (Data) => {
 // API for fetching the expense history
 export const getHistory = async () => {
   try {
-    const { data } = await axios.get(`${API_URL}/history`, {
+    const response = await axios.get(`${API_URL}/history`, {
       withCredentials: true,
     });
-    return data;
+    return response;
   } catch (error) {
     console.log(error);
     return error;

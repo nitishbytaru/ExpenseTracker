@@ -4,7 +4,6 @@ import {
   loginUser,
   logoutUser,
   getProfile,
-  updateProfileData,
   deleteAccount,
 } from "../controllers/user.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
@@ -25,7 +24,7 @@ router.post(
   "/login",
   passport.authenticate("local", {
     failureRedirect: "/login",
-    failureFlash: "login failed",
+    failureFlash: true,
   }),
   loginUser
 );
@@ -38,9 +37,6 @@ router.post("/logout", logoutUser);
 
 //route for getting currentUser
 router.get("/profile", getProfile);
-
-//route for updating the current user Data
-router.put("/profile", updateProfileData);
 
 //route for deleting the current user
 router.delete("/delete-account", deleteAccount);

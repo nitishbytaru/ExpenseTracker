@@ -1,11 +1,12 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { handleUserChange } from "../../utils/formHandleChanges.js";
-import LoginContext from "../../context/LoginContext";
 import { updateGoal } from "../../api/GoalApi.js";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function GoalForm() {
-  const { profile, selectedGoal } = useContext(LoginContext);
+  const profile = useSelector((state) => state.auth.profile);
+  const selectedGoal = useSelector((state) => state.transaction.selectedGoal);
   const navigate = useNavigate();
 
   const { title, description, amount, progress } = selectedGoal;

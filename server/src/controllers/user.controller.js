@@ -61,11 +61,11 @@ const registerUser = asyncHandler(async (req, res) => {
 
 //logic to login the user
 const loginUser = asyncHandler(async (req, res) => {
-  const { _id, email, username } = req.user;
+  const { _id, email, username, avatar } = req.user;
   res.json({
     success: true,
     message: "Login successful",
-    user: { _id, username, email },
+    user: { _id, username, email, avatar },
   });
 });
 
@@ -96,35 +96,6 @@ const getProfile = asyncHandler(async (req, res) => {
   }
 });
 
-//edit the details of user profile details
-const updateProfileData = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
-
-  if ([email, username, password].some((field) => field?.trim() === "")) {
-    res.status(400).send("Please provide all the fields");
-  }
-
-  try {
-    const user = await User.findByIdAndUpdate(
-      req.user?._id,
-      {
-        $set: {
-          username,
-          email,
-          password,
-        },
-      },
-      { new: true }
-    );
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, user, "Profile Updated Successfully"));
-  } catch (error) {
-    res.status(500).send("Something went wrong while updating profile");
-  }
-});
-
 //this route is used to delete the current user
 const deleteAccount = asyncHandler(async (req, res) => {
   try {
@@ -146,6 +117,5 @@ export {
   getProfile,
   loginUser,
   logoutUser,
-  updateProfileData,
   deleteAccount,
 };

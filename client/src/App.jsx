@@ -7,7 +7,6 @@ import {
   Login,
   Register,
   EditTransaction,
-  EditProfile,
   Analysis,
   Goal,
   GoalForm,
@@ -15,41 +14,29 @@ import {
 } from "./components/index.js";
 import LandingPage from "./pages/LandingPage.jsx";
 import NoPage from "./pages/NoPage.jsx";
-import LoginContextProvider from "./context/LoginContextProvider";
 import PrivateRoutes from "./utils/PrivateRoutes";
 
 function App() {
   return (
-    <LoginContextProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<LandingPage />} />
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-            <Route element={<PrivateRoutes />}>
-              <Route
-                path="transactionform"
-                element={<TransactionForm />}
-                exact
-              />
-              <Route path="history" element={<History />} exact />
-              <Route path="editProfile" element={<EditProfile />} exact />
-              <Route path="analysis" element={<Analysis />} exact />
-              <Route path="goal" element={<Goal />} exact />
-              <Route path="goalForm" element={<GoalForm />} exact />
-              <Route path="editGoal" element={<EditGoal />} exact />
-              <Route
-                path="editTransaction"
-                element={<EditTransaction />}
-                exact
-              />
-            </Route>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<LandingPage />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route element={<PrivateRoutes />}>
+            <Route path="transactionform" element={<TransactionForm />} exact />
+            <Route path="history" element={<History />} exact />
+            <Route path="analysis" element={<Analysis />} exact />
+            <Route path="goal" element={<Goal />} exact />
+            <Route path="goalForm" element={<GoalForm />} exact />
+            <Route path="editGoal" element={<EditGoal />} exact />
+            <Route path="editTransaction" element={<EditTransaction />} exact />
           </Route>
-          <Route path="*" element={<NoPage />} />
-        </Routes>
-      </Router>
-    </LoginContextProvider>
+        </Route>
+        <Route path="*" element={<NoPage />} />
+      </Routes>
+    </Router>
   );
 }
 

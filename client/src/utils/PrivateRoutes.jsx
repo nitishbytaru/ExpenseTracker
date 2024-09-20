@@ -1,9 +1,11 @@
-import React, { useContext } from "react";
+import React from "react";
+import { useSelector } from "react-redux";
 import { Outlet, Navigate } from "react-router-dom";
-import LoginContext from "../context/LoginContext";
 
 function PrivateRoutes() {
-  const { isLoggedIn, profile } = useContext(LoginContext);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const profile = useSelector((state) => state.auth.profile);
+
   return isLoggedIn && profile ? <Outlet /> : <Navigate to="/" />;
 }
 
